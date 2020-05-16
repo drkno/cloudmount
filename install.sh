@@ -8,7 +8,7 @@ update-ca-certificates
 # Rclone
 RCLONE_URL="https://downloads.rclone.org/rclone-current-linux-amd64.deb"
 curl "$RCLONE_URL" -L -o ./rclone.deb
-dkpg -i ./rclone.deb
+dpkg -i ./rclone.deb
 rm ./rclone.deb
 
 # Plexdrive
