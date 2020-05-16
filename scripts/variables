@@ -13,18 +13,18 @@ rclone_config="--config=/config/rclone.conf"
 rclone_options="${rclone_config} --buffer-size $(printenv BUFFER_SIZE) --checkers $(printenv CHECKERS)"
 rclone_mount_options="${rclone_options} --allow-non-empty --allow-other --max-read-ahead $(printenv MAX_READ_AHEAD) --uid ${_puid:-911} --gid ${_pgid:-911}"
 
-plexdrive_temp_dir="/chunks"
-plexdrive_options="--config=/config --temp=${plexdrive_temp_dir} --chunk-size=$(printenv CHUNK_SIZE) --clear-chunk-age=$(printenv CLEAR_CHUNK_AGE) --uid=${_puid:-911} --gid=${_pgid:-911} -o allow_other"
-if [ ! -z $(printenv CLEAR_CHUNK_MAX_SIZE) ]; then
-    plexdrive_options="${plexdrive_options} --clear-chunk-max-size=$(printenv CLEAR_CHUNK_MAX_SIZE)"
+plexdrive_options="--config=/config --cache-file=/data/db/cache.bolt --chunk-size=$(printenv CHUNK_SIZE) --chunk-check-threads=$(printenv CHUNK_CHECK_THREADS) --chunk-load-ahead=$(printenv CHUNK_LOAD_AHEAD) --chunk-load-threads=$(printenv CHUNK_LOAD_THREADS) --uid=${_puid:-911} --gid=${_pgid:-911} -o allow_other"
+if [ ! -z $(printenv MAX_NUM_CHUNKS) ]; then
+    plexdrive_options="${plexdrive_options} --max-chunks=$(printenv MAX_NUM_CHUNKS)"
+fi
+if [ ! -z "DRIVE_ID" ]; then
+    plexdrive_options="${plexdrive_options} --drive-id=$(printenv DRIVE_ID)"
 fi
 
 if [ "$(printenv READ_ONLY)" != "0" ]; then
     rclone_mount_options="${rclone_mount_options} --read-only"
     plexdrive_options="${plexdrive_options} -o read_only"
 fi
-
-mongo="--mongo-database=$(printenv MONGO_DATABASE) --mongo-host=localhost"
 
 ufs_options="-o uid=${_puid:-911} -o gid=${_pgid:-911} -o cow,allow_other,direct_io,nonempty,auto_cache,sync_read"
 

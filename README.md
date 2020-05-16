@@ -7,24 +7,22 @@ docker create \
 	-v /media:/local-media:shared \
 	-v /mnt/external/media:/local-decrypt:shared \
 	-v /configurations:/config \
-	-v /mnt/external/plexdrive:/chunks \
 	-v /logs:/log \
 	--privileged --cap-add=MKNOD --cap-add=SYS_ADMIN --device=/dev/fuse \
 	madslundt/cloud-media-scripts
 ```
 
-If you have more space you can increase `REMOVE_LOCAL_FILES_WHEN_SPACE_EXCEEDS_GB`, `FREEUP_ATLEAST_GB` and either increase `CLEAR_CHUNK_AGE` or add `CLEAR_CHUNK_MAX_SIZE`.
+If you have more space you can increase `REMOVE_LOCAL_FILES_WHEN_SPACE_EXCEEDS_GB`, `FREEUP_ATLEAST_GB` and add `MAX_NUM_CHUNKS`.
 
-Example of having `REMOVE_LOCAL_FILES_WHEN_SPACE_EXCEEDS_GB` set to 2TB, `FREEUP_ATLEAST_GB` to 1TB and `CLEAR_CHUNK_MAX_SIZE` to 1TB:
+Example of having `REMOVE_LOCAL_FILES_WHEN_SPACE_EXCEEDS_GB` set to 2TB, `FREEUP_ATLEAST_GB` to 1TB and `MAX_NUM_CHUNKS` to 1000:
 ```
 docker create \
 	--name cloud-media-scripts \
 	-v /media:/local-media:shared \
 	-v /mnt/external/media:/local-decrypt:shared \
 	-v /configurations:/config \
-	-v /mnt/external/plexdrive:/chunks \
 	-v /logs:/log \
-	-e CLEAR_CHUNK_MAX_SIZE="1000G" \
+	-e MAX_NUM_CHUNKS="500" \
 	-e REMOVE_LOCAL_FILES_WHEN_SPACE_EXCEEDS_GB="2000" \
 	-e FREEUP_ATLEAST_GB="1000" \
 	--privileged --cap-add=MKNOD --cap-add=SYS_ADMIN --device=/dev/fuse \
@@ -48,8 +46,7 @@ Volumes:
 * `-v /local-media` - Union of all files stored on cloud and local - Append **:shared**
 * `-v /local-decrypt` - Local files stored on disk - Append **:shared**
 * `-v /config` - Rclone and plexdrive configurations
-* `-v /chunks` - Plexdrive cache chunks
-* `-v /data/db` - MongoDB database
+* `-v /data/db` - The database
 * `-v /log` - Log files from mount, cloudupload and rmlocal
 * `-v /cloud-encrypt` - Cloud files encrypted synced with Plexdrive. This is empty if `ENCRYPT_MEDIA` is 0. - Append **:shared**
 * `-v /cloud-decrypt` - Cloud files decrypted with Rclone - Append **:shared**
@@ -62,9 +59,7 @@ Environment variables:
 * `-e RCLONE_CLOUD_ENDPOINT` - Rclone: Cloud endpoint (default **gd-crypt:**)
 * `-e RCLONE_LOCAL_ENDPOINT` - Rclone: Local endpoint (default **local-crypt:**) - this is ignored when `ENCRYPT_MEDIA` is 0.
 * `-e CHUNK_SIZE` - Plexdrive: The size of each chunk that is downloaded (default **10M**)
-* `-e CLEAR_CHUNK_MAX_SIZE` - Plexdrive: The maximum size of the temporary chunk directory (empty as default)
-* `-e CLEAR_CHUNK_AGE` - Plexdrive: The maximum age of a cached chunk file (default **24h**) - this is ignored if `CLEAR_CHUNK_MAX_SIZE` is set
-* `-e MONGO_DATABASE` - Mongo database used for Plexdrive (default **plexdrive**)
+* `-e MAX_NUM_CHUNKS` - Plexdrive: The maximum number of chunks (default **50**)
 * `-e DATE_FORMAT` - Date format for loggin (default **+%F@%T**)
 * `-e REMOVE_LOCAL_FILES_BASED_ON` - Remove local files based on `space`, `time` or `instant` (default **space**)
 * `-e REMOVE_LOCAL_FILES_WHEN_SPACE_EXCEEDS_GB` - Remove local files when local storage exceeds this value in GB (default **100**) - this is ignored if `REMOVE_LOCAL_FILES_BASED_ON` is set to time or instant
@@ -172,13 +167,11 @@ When using encryption this gives us a total of 5 directories:
  - /cloud-encrypt: Cloud data encrypted (Mounted with Plexdrive)
  - /cloud-decrypt: Cloud data decrypted (Mounted with Rclone)
  - /local-decrypt: Local data decrypted that is yet to be uploaded to the cloud
- - /chunks: Plexdrive temporary files and caching
  - /local-media: Union of decrypted cloud data and local data (Mounted with Union-FS)
 
 When NOT using encryption this gives us a total of 4 directories:
  - /cloud-decrypt: Cloud data decrypted (Mounted with Plexdrive)
  - /local-decrypt: Local data decrypted that is yet to be uploaded to the cloud
- - /chunks: Plexdrive temporary files and caching
  - /local-media: Union of decrypted cloud data and local data (Mounted with Union-FS)
 
 

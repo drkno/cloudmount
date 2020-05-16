@@ -6,11 +6,6 @@ all_good=1
 check_rclone_cloud
 check_rclone_local
 
-if [ $(ps -ef | grep "mongod" | grep -v "grep" | wc -l) == "0" ]; then
-    printf "\n\nMongoDB is not running\n\n"
-    all_good=0
-fi
-
 if [ $(ps -ef | grep "plexdrive" | grep -v "grep" | wc -l) == "0" ]; then
     printf "\n\nPlexdrive is not running\n\n"
     all_good=0

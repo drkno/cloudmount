@@ -1,21 +1,44 @@
 #!/bin/bash
-# Rclone variables
-_rclone_version="v1.39"
-rclone_release="rclone-${_rclone_version}-linux-amd64"
-rclone_zip="${rclone_release}.zip"
-rclone_url="https://github.com/ncw/rclone/releases/download/${_rclone_version}/${rclone_zip}"
-# Plexdrive variables
-plexdrive_bin="plexdrive-linux-amd64"
-plexdrive_url="https://github.com/dweidenfeld/plexdrive/releases/download/4.0.0/${plexdrive_bin}"
+set -e
+
+apt-get update
+apt-get install -y curl cron fuse unionfs-fuse bc unzip ca-certificates openssl
+update-ca-certificates
+
 # Rclone
-wget "$rclone_url"
-unzip "$rclone_zip"
-chmod a+x "${rclone_release}/rclone"
-cp -rf "${rclone_release}/rclone" "/usr/bin/rclone"
-rm -rf "$rclone_zip"
-rm -rf "$rclone_release"
+RCLONE_URL="https://downloads.rclone.org/rclone-current-linux-amd64.deb"
+curl "$RCLONE_URL" -L -o ./rclone.deb
+dkpg -i ./rclone.deb
+rm ./rclone.deb
+
 # Plexdrive
-wget "$plexdrive_url"
-chmod a+x "$plexdrive_bin"
-cp -rf "$plexdrive_bin" "/usr/bin/plexdrive"
-rm -rf "$plexdrive_bin"
+PLEXDRIVE_RELEASES_URL="https://api.github.com/repos/plexdrive/plexdrive/releases/latest"
+PLEXDRIVE_LATEST_RELEASE=`curl -s "$PLEXDRIVE_RELEASES_URL" | grep "browser_download_url.*plexdrive-linux-amd64" | cut -d : -f 2,3 | tr -d \"`
+curl "$PLEXDRIVE_LATEST_RELEASE" -L -o ./plexdrive
+chmod a+x ./plexdrive-linux-amd64
+mv ./plexdrive /usr/bin/plexdrive
+
+# S6
+S6_RELEASES_URL="https://api.github.com/repos/just-containers/s6-overlay/releases/latest"
+S6_LATEST_RELEASE=`curl -s "$S6_RELEASES_URL" | grep "browser_download_url.*s6-overlay-amd64.tar.gz" | cut -d : -f 2,3 | tr -d \"`
+curl "$S6_LATEST_RELEASE" -L -o ./s6.tar.gz
+tar xfz ./s6.tar.gz -C /
+
+# Fuse
+sed -i 's/#user_allow_other/user_allow_other/' /etc/fuse.conf
+
+# Directories
+mkdir /config
+mkdir -p /data/db
+mkdir /log
+chmod -R 777 /config /data /log
+
+# User and Group
+groupmod -g 1000 users
+useradd -u 911 -U -d / -s /bin/false abc
+usermod -G users abc
+
+chmod a+x /usr/bin/*
+apt-get clean autoclean
+apt-get autoremove -y
+rm -rf /tmp/* /var/lib/{apt,dpkg,cache,log}/

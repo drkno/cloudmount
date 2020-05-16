@@ -9,5 +9,5 @@ else
   echo "Setup Plexdrive"
   printf "==============================================================\n\n\n"
 
-  plexdrive $mongo $plexdrive_options "${cloud_encrypt_dir}"
+  plexdrive mount $plexdrive_options "${cloud_encrypt_dir}"
 fi
