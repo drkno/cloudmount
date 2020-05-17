@@ -35,9 +35,8 @@ sed -i 's/#user_allow_other/user_allow_other/' /etc/fuse.conf
 
 # Directories
 mkdir /config
-mkdir -p /data/db
-mkdir /log
-chmod -R 777 /config /data /log
+mkdir /mount
+chmod -R 777 /config /mount
 
 # User and Group
 groupmod -g 1000 users

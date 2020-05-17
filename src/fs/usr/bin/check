@@ -12,8 +12,8 @@ if [ $(ps -ef | grep "plexdrive" | grep -v "grep" | wc -l) == "0" ]; then
 fi
 
 if [ "$(printenv ENCRYPT_MEDIA)" != "0" ]; then
-    if [ -z "$(ls -A ${cloud_encrypt_dir})" ]; then
-        printf "\n\nWaiting for ${cloud_encrypt_dir}\n\n"
+    if [ -z "$(ls -A ${PLEXDRIVE_MOUNT})" ]; then
+        printf "\n\nWaiting for ${PLEXDRIVE_MOUNT}\n\n"
         exit 0
     fi
 
@@ -23,8 +23,8 @@ if [ "$(printenv ENCRYPT_MEDIA)" != "0" ]; then
     fi
 fi
 
-if [ -z "$(ls -A ${cloud_decrypt_dir})" ]; then
-    printf "\n\nWaiting for ${cloud_encrypt_dir}\n\n"
+if [ -z "$(ls -A ${RCLONE_MOUNT})" ]; then
+    printf "\n\nWaiting for ${PLEXDRIVE_MOUNT}\n\n"
     exit 0
 fi
 

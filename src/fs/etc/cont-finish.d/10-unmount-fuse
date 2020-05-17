@@ -2,7 +2,7 @@
 . "/usr/bin/variables"
 
 # unmount fuse
-fusermount -uz "${cloud_encrypt_dir}"
-fusermount -uz "${cloud_decrypt_dir}"
-fusermount -uz "${local_decrypt_dir}"
-fusermount -uz "${local_media_dir}"
+fusermount -uz "${PLEXDRIVE_MOUNT}"
+fusermount -uz "${RCLONE_MOUNT}"
+fusermount -uz "${PLEXDRIVE_DECRYPT_MOUNT}"
+fusermount -uz "${MOUNT_DIR}"

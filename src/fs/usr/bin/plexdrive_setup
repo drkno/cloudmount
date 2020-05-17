@@ -3,11 +3,11 @@
 . "/usr/bin/variables"
 
 printf "\n\n\n==============================================================\n"
-if [ -f "/config/config.json" ] || [ -f "/config/token.json" ]; then
-  echo "Plexdrive has already been set up. Remove /config/config.json and /config/token.json and run setup again."
+if [ -f "${CONFIG_DIR}/config.json" ] || [ -f "${CONFIG_DIR}/token.json" ]; then
+e   cho "Plexdrive has already been set up. Remove ${CONFIG_DIR}/config.json and ${CONFIG_DIR}/token.json and run setup again."
 else
-  echo "Setup Plexdrive"
-  printf "==============================================================\n\n\n"
+    echo "Setup Plexdrive"
+    printf "==============================================================\n\n\n"
 
-  plexdrive mount $plexdrive_options "${cloud_encrypt_dir}"
+    plexdrive mount $plexdrive_options "${PLEXDRIVE_MOUNT}"
 fi

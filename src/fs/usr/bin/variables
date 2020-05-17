@@ -1,19 +1,15 @@
 #!/bin/bash
 
+. "/usr/bin/create_directories"
+
 _puid=$(printenv PUID)
 _pgid=$(printenv PGID)
 
-cloud_encrypt_dir="/cloud-encrypt"
-cloud_decrypt_dir="/cloud-decrypt"
-
-local_decrypt_dir="/local-decrypt"
-local_media_dir="/local-media"
-
-rclone_config="--config=/config/rclone.conf"
+rclone_config="--config=${CONFIG_DIR}/rclone.conf"
 rclone_options="${rclone_config} --buffer-size $(printenv BUFFER_SIZE) --checkers $(printenv CHECKERS)"
 rclone_mount_options="${rclone_options} --allow-non-empty --allow-other --max-read-ahead $(printenv MAX_READ_AHEAD) --uid ${_puid:-911} --gid ${_pgid:-911}"
 
-plexdrive_options="--config=/config --cache-file=/data/db/cache.bolt --chunk-size=$(printenv CHUNK_SIZE) --chunk-check-threads=$(printenv CHUNK_CHECK_THREADS) --chunk-load-ahead=$(printenv CHUNK_LOAD_AHEAD) --chunk-load-threads=$(printenv CHUNK_LOAD_THREADS) --uid=${_puid:-911} --gid=${_pgid:-911} -o allow_other"
+plexdrive_options="--config=${CONFIG_DIR} --cache-file=${DB_DIR}/cache.bolt --chunk-size=$(printenv CHUNK_SIZE) --chunk-check-threads=$(printenv CHUNK_CHECK_THREADS) --chunk-load-ahead=$(printenv CHUNK_LOAD_AHEAD) --chunk-load-threads=$(printenv CHUNK_LOAD_THREADS) --uid=${_puid:-911} --gid=${_pgid:-911} -o allow_other"
 if [ ! -z $(printenv MAX_NUM_CHUNKS) ]; then
     plexdrive_options="${plexdrive_options} --max-chunks=$(printenv MAX_NUM_CHUNKS)"
 fi
@@ -31,16 +27,6 @@ ufs_options="-o uid=${_puid:-911} -o gid=${_pgid:-911} -o cow,allow_other,direct
 rclone_cloud_endpoint=$(printenv RCLONE_CLOUD_ENDPOINT | tr -d '"' | tr -d "'")
 rclone_local_endpoint=$(printenv RCLONE_LOCAL_ENDPOINT | tr -d '"' | tr -d "'")
 
-log_dir="/log"
-if [ ! -d "${log_dir}" ]; then
-	mkdir -p "${log_dir}"
-fi
-
-secrets_dir="/secrets"
-if [ -d "${secrets_dir}" ]; then
-    cp ${secrets_dir}/* /config/
-fi
-
 cloud_upload_time=$(printenv CLOUDUPLOADTIME)
 rm_delete_time=$(printenv RMDELETETIME)
-cron_log=/log/cron.log
+

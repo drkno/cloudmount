@@ -76,13 +76,8 @@ Run `docker run -it --rm -v ./config:/config drkno/cloudmount:latest plexdrive_s
 ```bash
 docker run \
 	--name cloudmount \
-	-v ./local-media:/local-media:shared \
-	-v ./local-decrypt:/local-decrypt:shared \
-	-v ./cloud-encrypt:/cloud-encrypt:shared \
-	-v ./cloud-decrypt:/cloud-decrypt:shared \
+	-v ./mount:/mount:shared \
 	-v ./config:/config \
-	-v ./db:/data/db \
-	-v ./log:/log \
 	--privileged \
 	--cap-add=MKNOD \
 	--cap-add=SYS_ADMIN \
@@ -130,13 +125,8 @@ services:
             - MAX_NUM_CHUNKS=50
         volumes:
             - /etc/localtime:/etc/localtime:ro
-            - ./local-media:/local-media:shared
-            - ./local-decrypt:/local-decrypt:shared
-            - ./cloud-encrypt:/cloud-encrypt:shared
-            - ./cloud-decrypt:/cloud-decrypt:shared
+            - ./mount:/mount:shared
             - ./config:/config
-            - ./db:/data/db
-            - ./log:/log
         devices:
             - /dev/fuse
 ```

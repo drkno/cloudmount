@@ -17,17 +17,17 @@ User gid:    $(id -g abc)
 "
 chmod -R 777 \
 	/var/lock \
-    $log_dir \
-    /data/db
+    $LOG_DIR \
+    $DB_DIR
 
 chmod a+r /etc/fuse.conf
 
 chown -R abc:abc \
-    /config \
-    /data/db \
+    $CONFIG_DIR \
+    $DB_DIR \
     /usr/bin/* \
-    $cloud_encrypt_dir \
-    $cloud_decrypt_dir \
-    $local_decrypt_dir \
-    $local_media_dir
+    $PLEXDRIVE_MOUNT \
+    $RCLONE_MOUNT \
+    $PLEXDRIVE_DECRYPT_MOUNT \
+    $MOUNT_DIR
 

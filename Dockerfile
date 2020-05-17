@@ -44,7 +44,8 @@ COPY src /install
 RUN chmod a+x /install/install.sh && \
     bash /install/install.sh
 
-VOLUME /data/db /cloud-encrypt /cloud-decrypt /local-decrypt /local-media /log
-WORKDIR /data
+VOLUME [ "/mount", "/config" ]
+
+WORKDIR /config
 ENTRYPOINT ["/init"]
 CMD cron -f

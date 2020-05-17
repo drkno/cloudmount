@@ -11,9 +11,9 @@
 # FUNCTIONS
 ###############################################################################
 mount_gdrive () {
-	cloud_dir="${cloud_encrypt_dir}"
+	cloud_dir="${PLEXDRIVE_MOUNT}"
 	if [ "$(printenv ENCRYPT_MEDIA)" -eq "0" ]; then
-		cloud_dir="${cloud_decrypt_dir}"
+		cloud_dir="${RCLONE_MOUNT}"
 	fi
 
 	# Make sure GD mountpoint exists.
@@ -39,45 +39,45 @@ mount_local_media () {
 	check_rclone_local
 
 	# Make sure decrypted GD directory exists.
-	if [ ! -d "${cloud_decrypt_dir}" ]; then
-		mkdir -p "${cloud_decrypt_dir}"
+	if [ ! -d "${RCLONE_MOUNT}" ]; then
+		mkdir -p "${RCLONE_MOUNT}"
 	fi
 
 	sleep 5
-	while [ -z "$(ls -A ${cloud_encrypt_dir})" ]
+	while [ -z "$(ls -A ${PLEXDRIVE_MOUNT})" ]
 	do
-		echo "Waiting for mount ${cloud_encrypt_dir} ..."
+		echo "Waiting for mount ${PLEXDRIVE_MOUNT} ..."
 		sleep 30
 	done
 
 	if [ $(ps -ef | grep "rclone" | grep -v "grep" | wc -l) == "0" ]; then
-		echo "[ $(date $(printenv DATE_FORMAT)) ] Mounting decrypted Google Drive: ${cloud_decrypt_dir}"
-		rclone mount $rclone_mount_options "$@" "${rclone_local_endpoint}" "${cloud_decrypt_dir}" &
+		echo "[ $(date $(printenv DATE_FORMAT)) ] Mounting decrypted Google Drive: ${RCLONE_MOUNT}"
+		rclone mount $rclone_mount_options "$@" "${rclone_local_endpoint}" "${RCLONE_MOUNT}" &
 	else
-		echo "[ $(date $(printenv DATE_FORMAT)) ] Decrypted mountpoint: ${cloud_decrypt_dir} already mounted."
+		echo "[ $(date $(printenv DATE_FORMAT)) ] Decrypted mountpoint: ${RCLONE_MOUNT} already mounted."
 	fi
 }
 
 mount_union () {
 	# Make sure combined plex media directory exists.
-	if [ ! -d "${local_media_dir}" ]; then
-		mkdir -p "${local_media_dir}"
+	if [ ! -d "${MOUNT_DIR}" ]; then
+		mkdir -p "${MOUNT_DIR}"
 	fi
 
-	if [ ! -d "${local_decrypt_dir}" ]; then
-		mkdir -p "${local_decrypt_dir}"
+	if [ ! -d "${PLEXDRIVE_DECRYPT_MOUNT}" ]; then
+		mkdir -p "${PLEXDRIVE_DECRYPT_MOUNT}"
 	fi
 
 	sleep 5
 
 	# Mount plex media directory if not already mounted.
 	if [ $(ps -ef | grep "unionfs" | grep -v "grep" | wc -l) == "0" ]; then
-		ufs_mounts="${local_decrypt_dir}=RW:${cloud_decrypt_dir}=RO"
+		ufs_mounts="${PLEXDRIVE_DECRYPT_MOUNT}=RW:${RCLONE_MOUNT}=RO"
 
-		echo "[ $(date $(printenv DATE_FORMAT)) ] Mounting union: ${local_media_dir}"
-		unionfs $ufs_options "${ufs_mounts}" "${local_media_dir}"
+		echo "[ $(date $(printenv DATE_FORMAT)) ] Mounting union: ${MOUNT_DIR}"
+		unionfs $ufs_options "${ufs_mounts}" "${MOUNT_DIR}"
 	else
-		echo "[ $(date $(printenv DATE_FORMAT)) ] Union mountpoint: ${local_media_dir} already mounted."
+		echo "[ $(date $(printenv DATE_FORMAT)) ] Union mountpoint: ${MOUNT_DIR} already mounted."
 	fi
 }
 
@@ -93,9 +93,10 @@ else
 	mount_union
 fi
 
-#Output environmental variables for cron
+# Output environmental variables for cron
+CRON_LOG="${LOG_DIR}/cron.log"
 env >> /etc/environment
-printf "${cloud_upload_time} cloudupload >> ${cron_log} 2>&1\n${rm_delete_time} rmlocal >> ${cron_log} 2>&1\n" > /etc/cron.d/upload
+printf "${cloud_upload_time} cloudupload >> ${CRON_LOG} 2>&1\n${rm_delete_time} rmlocal >> ${CRON_LOG} 2>&1\n" > /etc/cron.d/upload
 chmod 0644 /etc/cron.d/upload
 crontab /etc/cron.d/upload
 
