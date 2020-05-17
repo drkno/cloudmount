@@ -46,7 +46,6 @@ rsync --remove-source-files -avI /install/fs/ /
 rm -rf /install
 
 # Cleanup
-apt-get autoremove -y rsync
 apt-get clean autoclean
 apt-get autoremove -y
 rm -rf /tmp/* /var/lib/{apt,dpkg,cache,log}/

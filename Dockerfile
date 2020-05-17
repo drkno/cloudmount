@@ -42,7 +42,7 @@ ENV CLOUDUPLOADTIME="0 1 * * *" \
 COPY src /install
 
 RUN chmod a+x /install/install.sh && \
-    sh /install/install.sh
+    bash /install/install.sh
 
 VOLUME /data/db /cloud-encrypt /cloud-decrypt /local-decrypt /local-media /log
 WORKDIR /data
