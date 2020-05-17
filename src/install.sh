@@ -1,8 +1,9 @@
 #!/bin/bash
 set -e -x
 
+# Dependencies
 apt-get update
-apt-get install -y curl cron fuse unionfs-fuse ca-certificates openssl
+apt-get install -y curl cron fuse unionfs-fuse ca-certificates openssl rsync
 update-ca-certificates
 
 # Rclone
@@ -39,7 +40,13 @@ groupmod -g 1000 users
 useradd -u 911 -U -d / -s /bin/false abc
 usermod -G users abc
 
-chmod a+x /usr/bin/*
+# Scripts
+chmod a+x /install/fs/usr/bin/*
+rsync --remove-source-files -avI /install/fs/ /
+rm -rf /install
+
+# Cleanup
+apt-get autoremove -y rsync
 apt-get clean autoclean
 apt-get autoremove -y
 rm -rf /tmp/* /var/lib/{apt,dpkg,cache,log}/
