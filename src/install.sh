@@ -1,6 +1,9 @@
 #!/bin/bash
 set -e -x
 
+# Scripts
+chmod a+x /install/fs/usr/bin/*
+
 # Dependencies
 apt-get update
 apt-get install -y curl cron fuse unionfs-fuse ca-certificates openssl rsync
@@ -23,7 +26,7 @@ mv ./plexdrive /usr/bin/plexdrive
 S6_RELEASES_URL="https://api.github.com/repos/just-containers/s6-overlay/releases/latest"
 S6_LATEST_RELEASE=`curl -s "$S6_RELEASES_URL" | grep "browser_download_url.*s6-overlay-amd64.tar.gz\"" | cut -d : -f 2,3 | tr -d \" | tr -d '[:space:]'`
 curl "$S6_LATEST_RELEASE" -L -o ./s6.tar.gz
-tar xfz ./s6.tar.gz -C /
+tar xfz ./s6.tar.gz -C /install/fs/
 rm ./s6.tar.gz
 
 # Fuse
@@ -40,12 +43,11 @@ groupmod -g 1000 users
 useradd -u 911 -U -d / -s /bin/false abc
 usermod -G users abc
 
-# Scripts
-chmod a+x /install/fs/usr/bin/*
-rsync --remove-source-files -avI /install/fs/ /
-rm -rf /install
+# Move files
+rsync --remove-source-files -avIK /install/fs/ /
 
 # Cleanup
+rm -r /install
 apt-get clean autoclean
 apt-get autoremove -y
 rm -rf /tmp/* /var/lib/{apt,dpkg,cache,log}/
