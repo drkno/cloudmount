@@ -99,8 +99,8 @@ services:
             - MKNOD
             - SYS_ADMIN
         environment:
-			- PGID=1000
-			- PUID=1000
+            - PGID=1000
+            - PUID=1000
             - TZ=Australia/Sydney
             - ENCRYPT_MEDIA=1
             - BUFFER_SIZE=500M
