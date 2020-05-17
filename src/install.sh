@@ -27,6 +27,7 @@ S6_RELEASES_URL="https://api.github.com/repos/just-containers/s6-overlay/release
 S6_LATEST_RELEASE=`curl -s "$S6_RELEASES_URL" | grep "browser_download_url.*s6-overlay-amd64.tar.gz\"" | cut -d : -f 2,3 | tr -d \" | tr -d '[:space:]'`
 curl "$S6_LATEST_RELEASE" -L -o ./s6.tar.gz
 tar xfz ./s6.tar.gz -C /install/fs/
+rm /install/fs/usr/bin/execlineb
 rm ./s6.tar.gz
 
 # Fuse
