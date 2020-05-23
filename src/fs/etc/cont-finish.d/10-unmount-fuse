@@ -1,8 +1,7 @@
 #!/usr/bin/with-contenv sh
+
 . "/usr/bin/variables"
 
-# unmount fuse
 fusermount -uz "${PLEXDRIVE_MOUNT}"
 fusermount -uz "${RCLONE_MOUNT}"
-fusermount -uz "${PLEXDRIVE_DECRYPT_MOUNT}"
 fusermount -uz "${MOUNT_DIR}"

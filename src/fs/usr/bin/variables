@@ -1,32 +1,24 @@
 #!/bin/bash
 
-. "/usr/bin/create_directories"
+CONFIG_DIR='/config'
 
-_puid=$(printenv PUID)
-_pgid=$(printenv PGID)
+LOG_DIR="${CONFIG_DIR}/log"
+DB_DIR="${CONFIG_DIR}/db"
+MOUNT_DIR="${CONFIG_DIR}/local-media"
+INTERMEDIATE_DIR="${CONFIG_DIR}/intermediate_mounts"
+
+PLEXDRIVE_MOUNT="${INTERMEDIATE_DIR}/plexdrive"
+RCLONE_MOUNT="${INTERMEDIATE_DIR}/rclone"
+UPLOAD_QUEUE="${INTERMEDIATE_DIR}/upload_queue"
 
 rclone_config="--config=${CONFIG_DIR}/rclone.conf"
-rclone_options="${rclone_config} --buffer-size $(printenv BUFFER_SIZE) --checkers $(printenv CHECKERS)"
-rclone_mount_options="${rclone_options} --allow-non-empty --allow-other --max-read-ahead $(printenv MAX_READ_AHEAD) --uid ${_puid:-911} --gid ${_pgid:-911}"
+rclone_options="${rclone_config} --buffer-size ${BUFFER_SIZE} --checkers ${CHECKERS}"
+rclone_mount_options="${rclone_options} --allow-non-empty --allow-other --max-read-ahead ${MAX_READ_AHEAD} --uid ${PUID} --gid ${PGID} --read-only"
 
-plexdrive_options="--config=${CONFIG_DIR} --cache-file=${DB_DIR}/cache.bolt --chunk-size=$(printenv CHUNK_SIZE) --chunk-check-threads=$(printenv CHUNK_CHECK_THREADS) --chunk-load-ahead=$(printenv CHUNK_LOAD_AHEAD) --chunk-load-threads=$(printenv CHUNK_LOAD_THREADS) --uid=${_puid:-911} --gid=${_pgid:-911} -o allow_other"
+plexdrive_options="--config=${CONFIG_DIR} --cache-file=${DB_DIR}/cache.bolt --chunk-size=${CHUNK_SIZE} --chunk-check-threads=${CHUNK_CHECK_THREADS} --chunk-load-ahead=${CHUNK_LOAD_AHEAD} --chunk-load-threads=${CHUNK_LOAD_THREADS} --uid=${PUID} --gid=${PGID} -o allow_other  -o read_only"
 if [ ! -z $(printenv MAX_NUM_CHUNKS) ]; then
-    plexdrive_options="${plexdrive_options} --max-chunks=$(printenv MAX_NUM_CHUNKS)"
+    plexdrive_options="${plexdrive_options} --max-chunks=${MAX_NUM_CHUNKS}"
 fi
 if [ ! -z "DRIVE_ID" ]; then
-    plexdrive_options="${plexdrive_options} --drive-id=$(printenv DRIVE_ID)"
+    plexdrive_options="${plexdrive_options} --drive-id=${DRIVE_ID}"
 fi
-
-if [ "$(printenv READ_ONLY)" != "0" ]; then
-    rclone_mount_options="${rclone_mount_options} --read-only"
-    plexdrive_options="${plexdrive_options} -o read_only"
-fi
-
-ufs_options="-o uid=${_puid:-911} -o gid=${_pgid:-911} -o cow,allow_other,direct_io,nonempty,auto_cache,sync_read"
-
-rclone_cloud_endpoint=$(printenv RCLONE_CLOUD_ENDPOINT | tr -d '"' | tr -d "'")
-rclone_local_endpoint=$(printenv RCLONE_LOCAL_ENDPOINT | tr -d '"' | tr -d "'")
-
-cloud_upload_time=$(printenv CLOUDUPLOADTIME)
-rm_delete_time=$(printenv RMDELETETIME)
-

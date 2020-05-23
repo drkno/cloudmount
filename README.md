@@ -14,28 +14,28 @@ Run `docker run -it --rm -v ./config:/config drkno/cloudmount:latest rclone_setu
 3. Third and last one is for the local encryption/decryption
 
  - Endpoint to your cloud storage.
-	- Create new remote [**Press N**]
-	- Give it a name example gd
-	- Choose Google Drive [**Press 8**]
-	- If you have a client id paste it here or leave it blank
-	- Choose headless machine [**Press N**]
-	- Open the url in your browser and enter the verification code
+    - Create new remote [**Press N**]
+    - Give it a name example gd
+    - Choose Google Drive [**Press 8**]
+    - If you have a client id paste it here or leave it blank
+    - Choose headless machine [**Press N**]
+    - Open the url in your browser and enter the verification code
  - Encryption and decryption for your cloud storage.
-	- Create new remote [**Press N**]
-	- Give it the same name as specified in the environment variable `RCLONE_CLOUD_ENDPOINT` but without colon (:) (*default gd-crypt*)
-	- Choose Encrypt/Decrypt a remote [**Press 5**]
-	- Enter the name of the endpoint created in cloud-storage appended with a colon (:) and the subfolder on your cloud. Example `gd:/Media` or just `gd:` if you have your files in root in the cloud.
-	- Choose how to encrypt filenames. I prefer option 2 Encrypt the filenames
-	- Choose to either generate your own or random password. I prefer to enter my own.
-	- Choose to enter pass phrase for the salt or leave it blank. I prefer to enter my own.
+    - Create new remote [**Press N**]
+    - Give it the same name as specified in the environment variable `RCLONE_CLOUD_ENDPOINT` but without colon (:) (*default gd-crypt*)
+    - Choose Encrypt/Decrypt a remote [**Press 5**]
+    - Enter the name of the endpoint created in cloud-storage appended with a colon (:) and the subfolder on your cloud. Example `gd:/Media` or just `gd:` if you have your files in root in the cloud.
+    - Choose how to encrypt filenames. I prefer option 2 Encrypt the filenames
+    - Choose to either generate your own or random password. I prefer to enter my own.
+    - Choose to enter pass phrase for the salt or leave it blank. I prefer to enter my own.
  - Encryption and decryption for your local storage.
-	- Create new remote [**Press N**]
-	- Give it the same name as specified in the environment variable `RCLONE_LOCAL_ENDPOINT` but without colon (:) (*default local-crypt*)
-	- Choose Encrypt/Decrypt a remote [**Press 5**]
-	- Enter the encrypted folder: **/cloud-encrypt**. If you are using subdirectory append it to it. Example /cloud-encrypt/Media
-	- Choose the same filename encrypted as you did with the cloud storage.
-	- Enter the same password as you did with the cloud storage.
-	- Enter the same pass phrase as you did with the cloud storage.
+    - Create new remote [**Press N**]
+    - Give it the same name as specified in the environment variable `RCLONE_LOCAL_ENDPOINT` but without colon (:) (*default local-crypt*)
+    - Choose Encrypt/Decrypt a remote [**Press 5**]
+    - Enter the encrypted folder: **/config/mount**.
+    - Choose the same filename encrypted as you did with the cloud storage.
+    - Enter the same password as you did with the cloud storage.
+    - Enter the same pass phrase as you did with the cloud storage.
 
 ### Create PlexDrive configuration
 
@@ -47,16 +47,13 @@ Run `docker run -it --rm -v ./config:/config drkno/cloudmount:latest plexdrive_s
 |------------------------------------------|----------------|--------------------------------|
 | PGID                                     | _empty_        | User GID to run as.            |
 | PUID                                     | _empty_        | User UID to run as.            |
-| DATE_FORMAT                              | `+%F@%T`       | Logging date format.           |
 | PLEX_URL                                 | _empty_        | The PMS to empty the trash of. |
 | PLEX_TOKEN                               | _empty_        | The user token for the PMS.    |
-| ENCRYPT_MEDIA                            | `1`            | Enable media encryption. 0 = OFF, 1 =  0 = ON |
-| READ_ONLY                                | `1`            | Mount drives as read only. 0 = RW, 1 = RO |
 | BUFFER_SIZE                              | `500M`         | Buffer size to use when uploading / moving files |
 | MAX_READ_AHEAD                           | `30G`          | The maximum number of bytes that can be prefetched for sequential reads. |
 | CHECKERS                                 | `16`           | Number of checkers to run in parallel when moving/uploading. |
 | RCLONE_CLOUD_ENDPOINT                    | `gd-crypt:`    | Raw cloud endpoint for the remote drive. |
-| RCLONE_LOCAL_ENDPOINT                    | `local-crypt:` | Local decryption endpoint, ignored if `ENCRYPT_MEDIA` is 0. |
+| RCLONE_LOCAL_ENDPOINT                    | `local-crypt:` | Local decryption endpoint. |
 | CHUNK_SIZE                               | `10M`          | The size of each chunk that is downloaded while streaming. |
 | MAX_NUM_CHUNKS                           | `50`           | The maximum number of chunks to be in memory at one time while streaming. |
 | CHUNK_CHECK_THREADS                      | `4`            | Number of parallel checks to perform while streaming. |
@@ -75,14 +72,14 @@ Run `docker run -it --rm -v ./config:/config drkno/cloudmount:latest plexdrive_s
 
 ```bash
 docker run \
-	--name cloudmount \
-	-v ./mount:/mount:shared \
-	-v ./config:/config \
-	--privileged \
-	--cap-add=MKNOD \
-	--cap-add=SYS_ADMIN \
-	--device=/dev/fuse \
-	drkno/cloudmount:latest
+    --name cloudmount \
+    -v ./mount:/mount:shared \
+    -v ./config:/config \
+    --privileged \
+    --cap-add=MKNOD \
+    --cap-add=SYS_ADMIN \
+    --device=/dev/fuse \
+    drkno/cloudmount:latest
 ```
 
 ### Docker Compose
@@ -102,19 +99,16 @@ services:
             - PGID=1000
             - PUID=1000
             - TZ=Australia/Sydney
-            - ENCRYPT_MEDIA=1
             - BUFFER_SIZE=500M
             - MAX_READ_AHEAD=30G
             - CHECKERS=16
             - "RCLONE_CLOUD_ENDPOINT=gd-crypt:"
             - "RCLONE_LOCAL_ENDPOINT=local-crypt:"
             - CHUNK_SIZE=10M
-            - DATE_FORMAT=+%F@%T
             - REMOVE_LOCAL_FILES_BASED_ON=space
             - REMOVE_LOCAL_FILES_WHEN_SPACE_EXCEEDS_GB=100
             - FREEUP_ATLEAST_GB=80
             - REMOVE_LOCAL_FILES_AFTER_DAYS=1
-            - READ_ONLY=1
             - PLEX_URL=plex:32400
             - PLEX_TOKEN=
             - CLOUDUPLOADTIME=0 1 * * *

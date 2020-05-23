@@ -4,7 +4,7 @@
 ###############################################################################
 # shellcheck source=config
 
-. "/usr/bin/config"
+. "/usr/bin/variables"
 ##############################################################################
 
 plex_url=$(printenv PLEX_URL | tr -d '"' | tr -d "'")
@@ -33,14 +33,14 @@ emptyTrash() {
         echo "Refreshing library"
         curl -s -k -G -L "${plex_url}/library/sections/all/refresh?X-Plex-Token=${plex_token}"
         
-        echo "[ $(date ${date_format}) ] Library refreshing"
+        echo "Library refreshing"
         while true; do
             sleep 10
             if [[ -z $(isRefreshing) ]]; then
                 break
             fi
         done
-        echo "[ $(date ${date_format}) ] Library refresh completed"
+        echo "Library refresh completed"
         
         sections=$(getSections)
         if [ -z "${sections}" ]; then

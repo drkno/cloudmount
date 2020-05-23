@@ -1,0 +1,13 @@
+#!/usr/bin/with-contenv sh
+
+. "/usr/bin/variables"
+
+echo "Creating cron tasks..."
+
+CRON_LOG="${LOG_DIR}/cron.log"
+
+echo "${CLOUDUPLOADTIME} cloudupload >> ${CRON_LOG} 2>&1" > /etc/cron.d/upload
+echo "${RMDELETETIME} rmlocal >> ${CRON_LOG} 2>&1" >> /etc/cron.d/upload
+
+chmod 0644 /etc/cron.d/upload
+crontab /etc/cron.d/upload

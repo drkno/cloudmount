@@ -5,5 +5,4 @@ umask 022
 
 mount_command="mount"
 
-echo "Started ${mount_command}"
 exec $mount_command

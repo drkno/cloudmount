@@ -1,16 +1,16 @@
 #!/bin/bash
-. "/usr/bin/config"
+. "/usr/bin/variables"
 
-if [ -z "$(ls -A ${RCLONE_MOUNT})" ] || [ $(ps -ef | grep "unionfs" | grep -v "grep" | wc -l) == "0" ]; then
-    echo "[ $(date $(printenv DATE_FORMAT)) ] Mount has dropped. Remount in progress."
-    echo "[ $(date $(printenv DATE_FORMAT)) ] Unmounting..."
+if [ -z "$(ls -A ${RCLONE_MOUNT})" ] || ! pgrep unionfs > /dev/null; then
+    echo "Mount has dropped. Remount in progress."
+    echo "Unmounting..."
     fusermount -uz "${PLEXDRIVE_MOUNT}"
     fusermount -uz "${RCLONE_MOUNT}"
-    fusermount -uz "${PLEXDRIVE_DECRYPT_MOUNT}"
+    fusermount -uz "${UPLOAD_QUEUE}"
     fusermount -uz "${MOUNT_DIR}"
     
-    echo "[ $(date $(printenv DATE_FORMAT)) ] Unmounted successfully"
-    echo "[ $(date $(printenv DATE_FORMAT)) ] Mounting..."
+    echo "Unmounted successfully"
+    echo "Mounting..."
     mount
-    echo "[ $(date $(printenv DATE_FORMAT)) ] Mounted successfully"
+    echo "Mounted successfully"
 fi

@@ -1,103 +1,49 @@
 #!/bin/bash
-###############################################################################
-# mount.remote - A script to mount GDrive remote for use with Plex
-###############################################################################
-# CONFIGURATION
-###############################################################################
-# shellcheck source=config
 
-. "/usr/bin/config"
-###############################################################################
-# FUNCTIONS
-###############################################################################
-mount_gdrive () {
-	cloud_dir="${PLEXDRIVE_MOUNT}"
-	if [ "$(printenv ENCRYPT_MEDIA)" -eq "0" ]; then
-		cloud_dir="${RCLONE_MOUNT}"
-	fi
+. "/usr/bin/variables"
 
-	# Make sure GD mountpoint exists.
-	if [ ! -d "${cloud_dir}" ]; then
-		mkdir -p "${cloud_dir}"
-	fi
-
-	# Make sure Plexdrive temp folder exists.
-	if [ ! -d "${plexdrive_temp_dir}" ]; then
-		mkdir -p "${plexdrive_temp_dir}"
-	fi
-
-	# Mount GD if not already mounted.
-	if [ $(ps -ef | grep "plexdrive" | grep -v "grep" | wc -l) == "0" ]; then
-		echo "[ $(date $(printenv DATE_FORMAT)) ] Mounting Google Drive mountpoint: ${cloud_dir}"
-		plexdrive mount $plexdrive_options "${cloud_dir}" &
-	else
-		echo "[ $(date $(printenv DATE_FORMAT)) ] Google Drive mountpoint: ${cloud_dir} already mounted."
-	fi
+wait_for_mount() {
+    sleep 5
+    while [ -z "$(ls -A ${1})" ]
+    do
+        echo "Waiting for mount ${1} ..."
+        sleep 30
+    done
 }
 
-mount_local_media () {
-	check_rclone_local
+perform_mount() {
+    mount_point="${1}"
+    shift
+    if pgrep $1 > /dev/null; then
+        echo "Mounting ${mount_point}"
+        $@ "${mount_point}" &
+    else
+        echo "Mounting ${mount_point} already in progress, skipping..."
+    fi
 
-	# Make sure decrypted GD directory exists.
-	if [ ! -d "${RCLONE_MOUNT}" ]; then
-		mkdir -p "${RCLONE_MOUNT}"
-	fi
+    wait_for_mount "${mount_point}"
+}
 
-	sleep 5
-	while [ -z "$(ls -A ${PLEXDRIVE_MOUNT})" ]
-	do
-		echo "Waiting for mount ${PLEXDRIVE_MOUNT} ..."
-		sleep 30
-	done
+mount_plexdrive () {
+    perform_mount "${PLEXDRIVE_MOUNT}" plexdrive mount $plexdrive_options
+}
 
-	if [ $(ps -ef | grep "rclone" | grep -v "grep" | wc -l) == "0" ]; then
-		echo "[ $(date $(printenv DATE_FORMAT)) ] Mounting decrypted Google Drive: ${RCLONE_MOUNT}"
-		rclone mount $rclone_mount_options "$@" "${rclone_local_endpoint}" "${RCLONE_MOUNT}" &
-	else
-		echo "[ $(date $(printenv DATE_FORMAT)) ] Decrypted mountpoint: ${RCLONE_MOUNT} already mounted."
-	fi
+mount_rclone () {
+    perform_mount "${RCLONE_MOUNT}" rclone mount $rclone_mount_options "${RCLONE_LOCAL_ENDPOINT}"
 }
 
 mount_union () {
-	# Make sure combined plex media directory exists.
-	if [ ! -d "${MOUNT_DIR}" ]; then
-		mkdir -p "${MOUNT_DIR}"
-	fi
-
-	if [ ! -d "${PLEXDRIVE_DECRYPT_MOUNT}" ]; then
-		mkdir -p "${PLEXDRIVE_DECRYPT_MOUNT}"
-	fi
-
-	sleep 5
-
-	# Mount plex media directory if not already mounted.
-	if [ $(ps -ef | grep "unionfs" | grep -v "grep" | wc -l) == "0" ]; then
-		ufs_mounts="${PLEXDRIVE_DECRYPT_MOUNT}=RW:${RCLONE_MOUNT}=RO"
-
-		echo "[ $(date $(printenv DATE_FORMAT)) ] Mounting union: ${MOUNT_DIR}"
-		unionfs $ufs_options "${ufs_mounts}" "${MOUNT_DIR}"
-	else
-		echo "[ $(date $(printenv DATE_FORMAT)) ] Union mountpoint: ${MOUNT_DIR} already mounted."
-	fi
+    perform_mount "${MOUNT_DIR}" unionfs -o uid=${PUID} -o gid=${PGID} -o cow,allow_other,direct_io,nonempty,auto_cache,sync_read "${UPLOAD_QUEUE}=RW:${RCLONE_MOUNT}=RO"
 }
 
-###############################################################################
-
 if pidof -o %PPID -x "$(basename "$0")"; then
-	echo "[ $(date $(printenv DATE_FORMAT)) ] Mount already in progress. Aborting."
+    echo "Mount already in progress. Aborting."
 else
-	mount_gdrive
-	if [ "$(printenv ENCRYPT_MEDIA)" != "0" ]; then
-		mount_local_media
-	fi
-	mount_union
+    mount_plexdrive
+    mount_rclone
+    mount_union
 fi
 
-# Output environmental variables for cron
-CRON_LOG="${LOG_DIR}/cron.log"
-env >> /etc/environment
-printf "${cloud_upload_time} cloudupload >> ${CRON_LOG} 2>&1\n${rm_delete_time} rmlocal >> ${CRON_LOG} 2>&1\n" > /etc/cron.d/upload
-chmod 0644 /etc/cron.d/upload
-crontab /etc/cron.d/upload
+check
 
 exit 0

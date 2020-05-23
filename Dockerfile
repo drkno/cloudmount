@@ -1,7 +1,8 @@
 FROM ubuntu:latest
 
-# Time format
-ENV DATE_FORMAT="+%F@%T"
+# User
+ENV PGID=911 \
+    PUID=911
 
 # Plex
 ENV PLEX_URL="" \
@@ -10,10 +11,6 @@ ENV PLEX_URL="" \
 # S6 overlay
 ENV S6_BEHAVIOUR_IF_STAGE2_FAILS=2 \
     S6_KEEP_ENV=1
-
-# Encryption
-ENV ENCRYPT_MEDIA="1" \
-    READ_ONLY="1"
 
 # Rclone
 ENV BUFFER_SIZE="500M" \

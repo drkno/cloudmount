@@ -1,40 +1,55 @@
 #!/bin/bash
-. "/usr/bin/config"
+. "/usr/bin/variables"
 
-all_good=1
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+NC='\033[0m'
 
-check_rclone_cloud
-check_rclone_local
-
-if [ $(ps -ef | grep "plexdrive" | grep -v "grep" | wc -l) == "0" ]; then
-    printf "\n\nPlexdrive is not running\n\n"
-    all_good=0
-fi
-
-if [ "$(printenv ENCRYPT_MEDIA)" != "0" ]; then
-    if [ -z "$(ls -A ${PLEXDRIVE_MOUNT})" ]; then
-        printf "\n\nWaiting for ${PLEXDRIVE_MOUNT}\n\n"
-        exit 0
+print_status() {
+    status="${1}"
+    shift
+    if $@ &> /dev/null; then
+        printf "${status}:\t${GREEN}\xe2\x9C\x94${NC}\n"
+    else
+        printf "${status}:\t${RED}\xe2\x9C\x98${NC}\n"
+        export CHECK_FAILURE=1
     fi
+}
 
-    if [ $(ps -ef | grep "rclone" | grep -v "grep" | wc -l) == "0" ]; then
-        printf "\n\nRclone is not running\n\n"
-        all_good=0
-    fi
-fi
+CENSORED_PLEX_TOKEN=`echo "${PLEX_TOKEN}" | wc -L`
 
-if [ -z "$(ls -A ${RCLONE_MOUNT})" ]; then
-    printf "\n\nWaiting for ${PLEXDRIVE_MOUNT}\n\n"
-    exit 0
-fi
+echo "-------------------------------------"
+printf       "UID                                      :\t${PUID}\n"
+printf       "GID                                      :\t${PUID}\n"
+printf       "PLEX_URL                                 :\t${PLEX_URL}\n"
+printf       "PLEX_TOKEN                               :\t(${CENSORED_PLEX_TOKEN} chars)\n"
+printf       "BUFFER_SIZE                              :\t${BUFFER_SIZE}\n"
+printf       "MAX_READ_AHEAD                           :\t${MAX_READ_AHEAD}\n"
+printf       "CHECKERS                                 :\t${CHECKERS}\n"
+printf       "RCLONE_CLOUD_ENDPOINT                    :\t${RCLONE_CLOUD_ENDPOINT}\n"
+printf       "RCLONE_LOCAL_ENDPOINT                    :\t${RCLONE_LOCAL_ENDPOINT}\n"
+printf       "CHUNK_SIZE                               :\t${CHUNK_SIZE}\n"
+printf       "MAX_NUM_CHUNKS                           :\t${MAX_NUM_CHUNKS}\n"
+printf       "CHUNK_CHECK_THREADS                      :\t${CHUNK_CHECK_THREADS}\n"
+printf       "CHUNK_LOAD_AHEAD                         :\t${CHUNK_LOAD_AHEAD}\n"
+printf       "CHUNK_LOAD_THREADS                       :\t${CHUNK_LOAD_THREADS}\n"
+printf       "REMOVE_LOCAL_FILES_BASED_ON              :\t${REMOVE_LOCAL_FILES_BASED_ON}\n"
+printf       "REMOVE_LOCAL_FILES_WHEN_SPACE_EXCEEDS_GB :\t${REMOVE_LOCAL_FILES_WHEN_SPACE_EXCEEDS_GB}\n"
+printf       "FREEUP_ATLEAST_GB                        :\t${FREEUP_ATLEAST_GB}\n"
+printf       "REMOVE_LOCAL_FILES_AFTER_DAYS            :\t${REMOVE_LOCAL_FILES_AFTER_DAYS}\n"
+printf       "CLOUDUPLOADTIME                          :\t${CLOUDUPLOADTIME}\n"
+printf       "RMDELETETIME                             :\t${RMDELETETIME}\n"
+echo "-------------------------------------"
+print_status "PlexDrive Config                         " ls /config/config.json
+print_status "PlexDrive Process                        " pgrep plexdrive
+print_status "PlexDrive Mount                          " ls -A "${PLEXDRIVE_MOUNT}"
+print_status "Rclone Upload Config                     " [ "$(rclone listremotes $rclone_config | grep "${RCLONE_CLOUD_ENDPOINT}" | wc -l)" != "0" ]
+print_status "Rclone Decrypt Config                    " [ "$(rclone listremotes $rclone_config | grep "${RCLONE_LOCAL_ENDPOINT}" | wc -l)" != "0" ]
+print_status "Rclone Process                           " pgrep rclone
+print_status "Rclone Mount                             " ls -A "${RCLONE_MOUNT}"
+print_status "Union Process                            " pgrep unionfs
+echo "-------------------------------------"
 
-if [ $(ps -ef | grep "unionfs" | grep -v "grep" | wc -l) == "0" ]; then
-    printf "\n\nUnionFS is not running\n\n"
-    all_good=0
-fi
-
-if [ "$all_good" -eq "1" ]; then
-   printf "\n\nEverything looks good\n\n"
-else
-    exit 0
+if [ "$CHECK_FAILURE" == "1" ]; then
+    exit 1
 fi
