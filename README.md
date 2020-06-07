@@ -32,7 +32,7 @@ Run `docker run -it --rm -v ./config:/config drkno/cloudmount:latest rclone_setu
     - Create new remote [**Press N**]
     - Give it the same name as specified in the environment variable `RCLONE_LOCAL_ENDPOINT` but without colon (:) (*default local-crypt*)
     - Choose Encrypt/Decrypt a remote [**Press 5**]
-    - Enter the encrypted folder: **/config/mount**.
+    - Enter the encrypted folder: **/config/local-media**.
     - Choose the same filename encrypted as you did with the cloud storage.
     - Enter the same password as you did with the cloud storage.
     - Enter the same pass phrase as you did with the cloud storage.
@@ -73,8 +73,7 @@ Run `docker run -it --rm -v ./config:/config drkno/cloudmount:latest plexdrive_s
 ```bash
 docker run \
     --name cloudmount \
-    -v ./mount:/mount:shared \
-    -v ./config:/config \
+    -v ./config:/config:shared \
     --privileged \
     --cap-add=MKNOD \
     --cap-add=SYS_ADMIN \
@@ -119,8 +118,7 @@ services:
             - MAX_NUM_CHUNKS=50
         volumes:
             - /etc/localtime:/etc/localtime:ro
-            - ./mount:/mount:shared
-            - ./config:/config
+            - ./config:/config:shared
         devices:
             - /dev/fuse
 ```
