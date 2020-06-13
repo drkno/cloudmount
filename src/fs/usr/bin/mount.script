@@ -14,12 +14,8 @@ wait_for_mount() {
 perform_mount() {
     mount_point="${1}"
     shift
-    if pgrep $1 > /dev/null; then
-        echo "Mounting ${mount_point}"
-        $@ "${mount_point}" &
-    else
-        echo "Mounting ${mount_point} already in progress, skipping..."
-    fi
+    echo "Mounting ${mount_point}"
+    $@ "${mount_point}" &
 
     wait_for_mount "${mount_point}"
 }
