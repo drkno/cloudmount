@@ -1,0 +1,5 @@
+#!/usr/bin/with-contenv sh
+
+echo "Cleaning up cloudplow locks..."
+
+rm -rf /opt/cloudplow/locks

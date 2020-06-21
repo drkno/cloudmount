@@ -6,7 +6,7 @@ chmod a+x /install/fs/usr/bin/*
 
 # Dependencies
 apt-get update
-apt-get install -y curl cron fuse unionfs-fuse ca-certificates openssl rsync
+apt-get install -y curl cron fuse unionfs-fuse ca-certificates openssl rsync python3 python3-pip git
 update-ca-certificates
 
 # Rclone
@@ -32,6 +32,9 @@ rm ./s6.tar.gz
 
 # Fuse
 sed -i 's/#user_allow_other/user_allow_other/' /etc/fuse.conf
+
+# CloudPlow
+python3 -m pip install --no-cache-dir --upgrade -r /install/fs/opt/cloudplow/requirements.txt
 
 # Directories
 mkdir /config

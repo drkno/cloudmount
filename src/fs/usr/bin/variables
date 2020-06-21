@@ -1,24 +1,34 @@
 #!/bin/bash
 
-CONFIG_DIR='/config'
+# Base Paths
+CONFIG_ROOT='/config'
+CONFIG_FILES_DIR="${CONFIG_ROOT}/config"
+LOG_DIR="${CONFIG_ROOT}/logs"
+DB_DIR="${CONFIG_ROOT}/db"
+INTERMEDIATE_DIR="${CONFIG_ROOT}/intermediate_mounts"
 
-LOG_DIR="${CONFIG_DIR}/log"
-DB_DIR="${CONFIG_DIR}/db"
-MOUNT_DIR="${CONFIG_DIR}/local-media"
-INTERMEDIATE_DIR="${CONFIG_DIR}/intermediate_mounts"
-
+# Mount Locations
+MOUNT_DIR="${CONFIG_ROOT}/local-media"
 PLEXDRIVE_MOUNT="${INTERMEDIATE_DIR}/plexdrive"
 RCLONE_MOUNT="${INTERMEDIATE_DIR}/rclone"
 UPLOAD_QUEUE="${INTERMEDIATE_DIR}/upload_queue"
 
-rclone_config="--config=${CONFIG_DIR}/rclone.conf"
-rclone_options="${rclone_config} --buffer-size ${BUFFER_SIZE} --checkers ${CHECKERS}"
-rclone_mount_options="${rclone_options} --allow-non-empty --allow-other --max-read-ahead ${MAX_READ_AHEAD} --uid ${PUID} --gid ${PGID} --read-only"
+# Config Files
+CLOUDPLOW_CONFIG_FILE="${CONFIG_FILES_DIR}/cloudplow.json"
+RCLONE_CONFIG_FILE="${CONFIG_FILES_DIR}/rclone.conf"
+PLEXDRIVE_CONFIG_FILES="${CONFIG_FILES_DIR}/plexdrive"
 
-plexdrive_options="--config=${CONFIG_DIR} --cache-file=${DB_DIR}/cache.bolt --chunk-size=${CHUNK_SIZE} --chunk-check-threads=${CHUNK_CHECK_THREADS} --chunk-load-ahead=${CHUNK_LOAD_AHEAD} --chunk-load-threads=${CHUNK_LOAD_THREADS} --uid=${PUID} --gid=${PGID} -o allow_other  -o read_only"
+# Log Files
+CLOUDPLOW_LOG_FILE="${LOG_DIR}/cloudplow.log"
+CRON_LOG_FILE="${LOG_DIR}/cron.log"
+EMPTYTRASH_LOG_FILE="${LOG_DIR}/emptytrash.log"
+MOUNT_LOG_FILE="${LOG_DIR}/mount.log"
+
+# PlexDrive shared
+PLEXDRIVE_OPTIONS="--config=${CONFIG_FILES_DIR} --cache-file=${DB_DIR}/cache.bolt --chunk-size=${CHUNK_SIZE} --chunk-check-threads=${CHUNK_CHECK_THREADS} --chunk-load-ahead=${CHUNK_LOAD_AHEAD} --chunk-load-threads=${CHUNK_LOAD_THREADS} --uid=${PUID} --gid=${PGID} -o allow_other  -o read_only"
 if [ ! -z $(printenv MAX_NUM_CHUNKS) ]; then
-    plexdrive_options="${plexdrive_options} --max-chunks=${MAX_NUM_CHUNKS}"
+    PLEXDRIVE_OPTIONS="${PLEXDRIVE_OPTIONS} --max-chunks=${MAX_NUM_CHUNKS}"
 fi
 if [ ! -z "DRIVE_ID" ]; then
-    plexdrive_options="${plexdrive_options} --drive-id=${DRIVE_ID}"
+    PLEXDRIVE_OPTIONS="${PLEXDRIVE_OPTIONS} --drive-id=${DRIVE_ID}"
 fi

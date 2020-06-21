@@ -9,4 +9,4 @@ if [ -f "${CONFIG_DIR}/config.json" ] || [ -f "${CONFIG_DIR}/token.json" ]; then
     exit 1
 fi
 
-plexdrive mount $plexdrive_options "${PLEXDRIVE_MOUNT}"
+plexdrive mount $PLEXDRIVE_OPTIONS "${PLEXDRIVE_MOUNT}"

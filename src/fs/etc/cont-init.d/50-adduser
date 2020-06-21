@@ -7,18 +7,12 @@ echo "Creating user..."
 usermod -o -u "$PUID" abc
 groupmod -o -g "$PGID" abc
 
-chmod -R 777 \
-    /var/lock \
-    $LOG_DIR \
-    $DB_DIR
-
 chmod a+r /etc/fuse.conf
 
+chmod -R 777 \
+    /var/lock \
+    $CONFIG_ROOT
+
 chown -R abc:abc \
-    $CONFIG_DIR \
-    $DB_DIR \
-    /usr/bin/* \
-    $PLEXDRIVE_MOUNT \
-    $RCLONE_MOUNT \
-    $UPLOAD_QUEUE \
-    $MOUNT_DIR
+    $CONFIG_ROOT \
+    /usr/bin/*

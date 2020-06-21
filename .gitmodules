@@ -1,0 +1,3 @@
+[submodule "src/fs/opt/cloudplow"]
+	path = src/fs/opt/cloudplow
+	url = git@github.com:l3uddz/cloudplow.git

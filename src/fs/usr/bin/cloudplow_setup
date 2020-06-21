@@ -1,0 +1,123 @@
+#!/bin/bash
+. "/usr/bin/variables"
+
+echo "=============================================================="
+echo "Generating CloudPlow config file at ${CLOUDPLOW_CONFIG_FILE}"
+echo "It is recommended you review and update this file."
+echo "=============================================================="
+
+cat > "${CLOUDPLOW_CONFIG_FILE}" << EOF
+{
+    "core": {
+        "dry_run": false,
+        "rclone_binary_path": "$(which rclone)",
+        "rclone_config_path": "${RCLONE_CONFIG_FILE}"
+    },
+    "hidden": {
+        "${MOUNT_DIR}/.unionfs-fuse": {
+            "hidden_remotes": [
+                "$(echo ${RCLONE_CLOUD_ENDPOINT} | cut -d':' -f1)"
+            ]
+        }
+    },
+    "notifications": {
+    },
+    "nzbget": {
+        "enabled": false,
+        "url": "https://user:pass@nzbget.domain.com"
+    },
+    "plex": {
+        "enabled": $([ ! -z $PLEX_TOKEN ] && echo true || echo false),
+        "url": "http://${PLEX_URL}",
+        "token": "${PLEX_TOKEN}",
+        "poll_interval": 60,
+        "max_streams_before_throttle": 1,
+        "notifications": false,
+        "rclone": {
+            "throttle_speeds": {
+                "0": "1000M",
+                "1": "50M",
+                "2": "40M",
+                "3": "30M",
+                "4": "20M",
+                "5": "10M"
+            },
+            "url": "http://localhost:7949"
+        }
+    },
+    "remotes": {
+        "$(echo ${RCLONE_CLOUD_ENDPOINT} | cut -d':' -f1)": {
+            "hidden_remote": "${RCLONE_CLOUD_ENDPOINT}",
+            "rclone_excludes": [
+                "**partial~",
+                "**_HIDDEN~",
+                ".unionfs/**",
+                ".unionfs-fuse/**",
+                "**.fuse_hidden**"
+            ],
+            "rclone_extras": {
+                "--checkers": ${CHECKERS},
+                "--drive-chunk-size": "64M",
+                "--stats": "60s",
+                "--transfers": 8,
+                "--verbose": 1,
+                "--skip-links": null,
+                "--drive-stop-on-upload-limit": null,
+                "--user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.131 Safari/537.36"
+            },
+            "rclone_sleeps": {
+                "Failed to copy: googleapi: Error 403: User rate limit exceeded": {
+                    "count": 5,
+                    "sleep": 25,
+                    "timeout": 3600
+                },
+                " 0/s,": {
+                    "count": 15,
+                    "sleep": 25,
+                    "timeout": 140
+                }
+            },
+            "rclone_command":"move",
+            "remove_empty_dir_depth": 2,
+            "sync_remote": "",
+            "upload_folder": "${UPLOAD_QUEUE}",
+            "upload_remote": "${RCLONE_CLOUD_ENDPOINT}"
+        }
+    },
+    "syncer": {
+    },
+    "uploader": {
+        "$(echo ${RCLONE_CLOUD_ENDPOINT} | cut -d':' -f1)": {
+            "can_be_throttled": true,
+            "check_interval": 30,
+            "exclude_open_files": true,
+            "max_size_gb": ${REMOVE_LOCAL_FILES_WHEN_SPACE_EXCEEDS_GB},
+            "opened_excludes": [
+            ],
+            "schedule": {
+                "allowed_from": "04:00",
+                "allowed_until": "08:00",
+                "enabled": true
+            },
+            "size_excludes": [
+            ],
+            "service_account_path":"/home/user/.config/cloudplow/service_accounts/",
+            "mover": {
+                "enabled": false,
+                "move_from_remote": "staging:Media",
+                "move_to_remote": "gdrive:Media",
+                "rclone_extras": {
+                    "--delete-empty-src-dirs": null,
+                    "--create-empty-src-dirs": null,
+                    "--stats": "60s",
+                    "--verbose": 1,
+                    "--no-traverse": null,
+                    "--drive-server-side-across-configs": null,
+                    "--user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.131 Safari/537.36"
+                }
+            }
+        }
+    }
+}
+
+EOF

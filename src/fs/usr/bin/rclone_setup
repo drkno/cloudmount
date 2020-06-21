@@ -26,4 +26,4 @@ printf "\t- Enter the same pass phrase as you did with the cloud storage.\n"
 
 echo "=============================================================="
 
-rclone $rclone_config config
+rclone "--config=${RCLONE_CONFIG_FILE}" config

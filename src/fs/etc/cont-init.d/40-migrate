@@ -1,0 +1,33 @@
+#!/usr/bin/with-contenv sh
+
+. "/usr/bin/variables"
+
+echo "Migrating old data..."
+
+move_if_exists() {
+    file="${1}"
+    destination="${2}"
+    if [ -d "${file}" ] || [ -f "${file}" ]; then
+        echo "Moving '${file}' to '${destination}'"
+        mv "${file} ${destination}"
+    fi
+}
+
+# PlexDrive configs
+move_if_exists "${CONFIG_ROOT}/config.json" "${PLEXDRIVE_CONFIG_FILES}/config.json"
+move_if_exists "${CONFIG_ROOT}/token.json" "${PLEXDRIVE_CONFIG_FILES}/token.json"
+
+# Rclone config
+move_if_exists "${CONFIG_ROOT}/rclone.conf" "${RCLONE_CONFIG_FILE}"
+
+# Old logs
+CLOUDUPLOAD_LOG_FILE="${LOG_DIR}/cloudupload.log"
+RMLOCAL_LOG_FILE="${LOG_DIR}/rmlocal.log"
+if [ -d "${CONFIG_ROOT}/log" ]; then
+    move_if_exists "${CONFIG_ROOT}/log/cloudupload.log" "${CLOUDUPLOAD_LOG_FILE}"
+    move_if_exists "${CONFIG_ROOT}/log/cron.log" "${CRON_LOG_FILE}"
+    move_if_exists "${CONFIG_ROOT}/log/mount.log" "${MOUNT_LOG_FILE}"
+    move_if_exists "${CONFIG_ROOT}/log/rmlocal.log" "${RMLOCAL_LOG_FILE}"
+    move_if_exists "${CONFIG_ROOT}/log/emptytrash.log" "${EMPTYTRASH_LOG_FILE}"
+    rm -r "${CONFIG_ROOT}/log"
+fi

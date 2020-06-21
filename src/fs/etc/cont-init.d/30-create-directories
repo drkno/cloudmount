@@ -1,0 +1,23 @@
+#!/usr/bin/with-contenv sh
+
+. "/usr/bin/variables"
+
+echo "Creating directories..."
+
+ensure_exists() {
+    directory="${1}"
+    if [ ! -d "${directory}" ]; then
+        echo "Creating '${directory}'"
+        mkdir -p "${directory}"
+    fi
+}
+
+ensure_exists "${CONFIG_ROOT}"
+ensure_exists "${CONFIG_FILES_DIR}"
+ensure_exists "${LOG_DIR}"
+ensure_exists "${DB_DIR}"
+ensure_exists "${MOUNT_DIR}"
+ensure_exists "${PLEXDRIVE_MOUNT}"
+ensure_exists "${RCLONE_MOUNT}"
+ensure_exists "${UPLOAD_QUEUE}"
+ensure_exists "${PLEXDRIVE_CONFIG_FILES}"

@@ -2,4 +2,4 @@
 . "/usr/bin/variables"
 
 sleep 5
-mount.script "$@" 2>&1 | tee "${LOG_DIR}/mount.log"
+mount.script "$@" 2>&1 | tee "${MOUNT_LOG_FILE}"

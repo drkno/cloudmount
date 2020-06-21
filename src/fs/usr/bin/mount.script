@@ -21,11 +21,11 @@ perform_mount() {
 }
 
 mount_plexdrive () {
-    perform_mount "${PLEXDRIVE_MOUNT}" plexdrive mount $plexdrive_options
+    perform_mount "${PLEXDRIVE_MOUNT}" plexdrive mount $PLEXDRIVE_OPTIONS
 }
 
 mount_rclone () {
-    perform_mount "${RCLONE_MOUNT}" rclone mount $rclone_mount_options "${RCLONE_LOCAL_ENDPOINT}"
+    perform_mount "${RCLONE_MOUNT}" rclone mount "--config=${RCLONE_CONFIG_FILE}" --buffer-size "${BUFFER_SIZE}" --checkers "${CHECKERS}" --allow-non-empty --allow-other --max-read-ahead "${MAX_READ_AHEAD}" --uid "${PUID}" --gid "${PGID}" --read-only "${RCLONE_LOCAL_ENDPOINT}"
 }
 
 mount_union () {

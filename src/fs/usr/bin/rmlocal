@@ -1,4 +1,0 @@
-#!/bin/bash
-. "/usr/bin/variables"
-
-rmlocal.script "$@" 2>&1 | tee "${LOG_DIR}/rmlocal.log"

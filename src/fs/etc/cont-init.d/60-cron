@@ -1,0 +1,10 @@
+#!/usr/bin/with-contenv sh
+
+. "/usr/bin/variables"
+
+echo "Creating cron tasks..."
+
+echo "${RMDELETETIME} emptytrash >> ${CRON_LOG_FILE} 2>&1" >> /etc/cron.d/upload
+
+chmod 0644 /etc/cron.d/upload
+crontab /etc/cron.d/upload
