@@ -15,7 +15,6 @@ ensure_exists() {
 ensure_exists "${CONFIG_ROOT}"
 ensure_exists "${CONFIG_FILES_DIR}"
 ensure_exists "${LOG_DIR}"
-ensure_exists "${DB_DIR}"
 ensure_exists "${MOUNT_DIR}"
 ensure_exists "${PLEXDRIVE_MOUNT}"
 ensure_exists "${RCLONE_MOUNT}"
