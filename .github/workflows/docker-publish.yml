@@ -1,13 +1,10 @@
 name: Pubish Docker image
-
 on:
     push:
         branches:
             - master
-
 env:
     IMAGE_NAME: cloudmount
-
 jobs:
     push_to_registries:
         name: Push Docker image
@@ -15,18 +12,20 @@ jobs:
         steps:
           - name: Check out the repo
             uses: actions/checkout@v2
+            with:
+                submodules: true
           - name: Push to Docker Hub
             uses: docker/build-push-action@v1
             with:
-              username: ${{ secrets.DOCKERHUB_USERNAME }}
-              password: ${{ secrets.DOCKERHUB_TOKEN }}
-              repository: drkno/cloudmount
-              tag_with_ref: true
+                username: ${{ secrets.DOCKERHUB_USERNAME }}
+                password: ${{ secrets.DOCKERHUB_TOKEN }}
+                repository: drkno/cloudmount
+                tag_with_ref: true
           - name: Push to GitHub Packages
             uses: docker/build-push-action@v1
             with:
-              username: ${{ github.actor }}
-              password: ${{ secrets.GITHUB_TOKEN }}
-              registry: docker.pkg.github.com
-              repository: drkno/cloudmount/cloudmount
-              tag_with_ref: true
+                username: ${{ github.actor }}
+                password: ${{ secrets.GITHUB_TOKEN }}
+                registry: docker.pkg.github.com
+                repository: drkno/cloudmount/cloudmount
+                tag_with_ref: true
