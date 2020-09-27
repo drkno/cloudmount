@@ -20,7 +20,7 @@ jobs:
             with:
               username: ${{ secrets.DOCKERHUB_USERNAME }}
               password: ${{ secrets.DOCKERHUB_TOKEN }}
-              repository: drkno/cloudmount:latest
+              repository: drkno/cloudmount
               tag_with_ref: true
           - name: Push to GitHub Packages
             uses: docker/build-push-action@v1
