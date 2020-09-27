@@ -59,11 +59,7 @@ Run `docker run -it --rm -v ./config:/config drkno/cloudmount:latest plexdrive_s
 | CHUNK_CHECK_THREADS                      | `4`            | Number of parallel checks to perform while streaming. |
 | CHUNK_LOAD_AHEAD                         | `4`            | Number of chunks to load ahead of time. |
 | CHUNK_LOAD_THREADS                       | `4`            | Number of chunks to load in parallel. |
-| REMOVE_LOCAL_FILES_BASED_ON              | `space`        | Remove local files based on `space`, `time` or `instant`. |
-| REMOVE_LOCAL_FILES_WHEN_SPACE_EXCEEDS_GB | `100`          | Remove local files when local storage exceeds this value in GB. Ignored if `REMOVE_LOCAL_FILES_BASED_ON` is set to `time` or `instant`. |
-| FREEUP_ATLEAST_GB                        | `80`           | Minimum amount of space to free in each upload. |
-| REMOVE_LOCAL_FILES_AFTER_DAYS            | `30`           | Remove local files older than this value in days. Ignored if `REMOVE_LOCAL_FILES_BASED_ON` is set to `space` or `instant`. |
-| CLOUDUPLOADTIME                          | `0 1 * * *`    | Cron expression defining when to upload local copies of files. `0 0 31 2 0` disables uploading. |
+| REMOVE_LOCAL_FILES_WHEN_SPACE_EXCEEDS_GB | `100`          | Remove local files when local storage exceeds this value in GB. |
 | RMDELETETIME                             | `0 6 * * *`    | Cron expression defining when to delete local copies of files. `0 0 31 2 0` disables local deletions. |
 
 ## Usage
@@ -74,6 +70,7 @@ Run `docker run -it --rm -v ./config:/config drkno/cloudmount:latest plexdrive_s
 docker run \
     --name cloudmount \
     -v ./config:/config:shared \
+    -p 5572:5572/tcp \
     --privileged \
     --cap-add=MKNOD \
     --cap-add=SYS_ADMIN \
@@ -104,13 +101,9 @@ services:
             - "RCLONE_CLOUD_ENDPOINT=gd-crypt:"
             - "RCLONE_LOCAL_ENDPOINT=local-crypt:"
             - CHUNK_SIZE=10M
-            - REMOVE_LOCAL_FILES_BASED_ON=space
             - REMOVE_LOCAL_FILES_WHEN_SPACE_EXCEEDS_GB=100
-            - FREEUP_ATLEAST_GB=80
-            - REMOVE_LOCAL_FILES_AFTER_DAYS=1
             - PLEX_URL=plex:32400
             - PLEX_TOKEN=
-            - CLOUDUPLOADTIME=0 1 * * *
             - RMDELETETIME=0 6 * * *
             - CHUNK_CHECK_THREADS=16
             - CHUNK_LOAD_AHEAD=6
@@ -121,7 +114,13 @@ services:
             - ./config:/config:shared
         devices:
             - /dev/fuse
+        ports:
+            - 5572:5572/tcp
 ```
+
+### Rclone RCD GUI
+
+By default this container starts the [rclone rcd GUI](https://rclone.org/gui/) on port 5572 *with no authentication*. It is expected that this GUI will either not be exposed or [run behind an SSO](https://github.com/drkno/PlexSSOv2).
 
 ## Building
 

@@ -3,6 +3,8 @@ set -e -x
 
 # Scripts
 chmod a+x /install/fs/usr/bin/*
+chmod a+x /install/fs/etc/cont-*.d/*
+chmod a+x /install/fs/etc/services.d/*/run
 
 # Dependencies
 apt-get update

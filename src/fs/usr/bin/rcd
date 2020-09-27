@@ -1,0 +1,4 @@
+#!/bin/bash
+. "/usr/bin/variables"
+
+rclone rcd --rc-web-gui -rc-web-gui-no-open-browser --rc-no-auth

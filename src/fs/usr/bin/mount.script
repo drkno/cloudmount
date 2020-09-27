@@ -25,7 +25,7 @@ mount_plexdrive () {
 }
 
 mount_rclone () {
-    perform_mount "${RCLONE_MOUNT}" rclone mount "--config=${RCLONE_CONFIG_FILE}" --buffer-size "${BUFFER_SIZE}" --checkers "${CHECKERS}" --allow-non-empty --allow-other --max-read-ahead "${MAX_READ_AHEAD}" --uid "${PUID}" --gid "${PGID}" --read-only "${RCLONE_LOCAL_ENDPOINT}"
+    perform_mount "${RCLONE_MOUNT}" rclone mount "--config=${RCLONE_CONFIG_FILE}" --vfs-cache-mode full --vfs-read-ahead "${BUFFER_SIZE}" --buffer-size "${BUFFER_SIZE}" --checkers "${CHECKERS}" --allow-non-empty --allow-other --max-read-ahead --no-modtime "${MAX_READ_AHEAD}" --uid "${PUID}" --gid "${PGID}" --read-only "${RCLONE_LOCAL_ENDPOINT}"
 }
 
 mount_union () {

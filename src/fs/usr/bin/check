@@ -17,6 +17,7 @@ print_status() {
 }
 
 CENSORED_PLEX_TOKEN=`echo "${PLEX_TOKEN}" | wc -L`
+CENSORED_RCD_PASSWORD=`echo "${RCLONE_RCD_PASSWORD}" | wc -L`
 
 echo "-------------------------------------"
 printf       "UID                                      :\t${PUID}\n"
@@ -33,12 +34,10 @@ printf       "MAX_NUM_CHUNKS                           :\t${MAX_NUM_CHUNKS}\n"
 printf       "CHUNK_CHECK_THREADS                      :\t${CHUNK_CHECK_THREADS}\n"
 printf       "CHUNK_LOAD_AHEAD                         :\t${CHUNK_LOAD_AHEAD}\n"
 printf       "CHUNK_LOAD_THREADS                       :\t${CHUNK_LOAD_THREADS}\n"
-printf       "REMOVE_LOCAL_FILES_BASED_ON              :\t${REMOVE_LOCAL_FILES_BASED_ON}\n"
 printf       "REMOVE_LOCAL_FILES_WHEN_SPACE_EXCEEDS_GB :\t${REMOVE_LOCAL_FILES_WHEN_SPACE_EXCEEDS_GB}\n"
-printf       "FREEUP_ATLEAST_GB                        :\t${FREEUP_ATLEAST_GB}\n"
-printf       "REMOVE_LOCAL_FILES_AFTER_DAYS            :\t${REMOVE_LOCAL_FILES_AFTER_DAYS}\n"
-printf       "CLOUDUPLOADTIME                          :\t${CLOUDUPLOADTIME}\n"
 printf       "RMDELETETIME                             :\t${RMDELETETIME}\n"
+printf       "RCLONE_RCD_USER                          :\t${RCLONE_RCD_USER}\n"
+printf       "RCLONE_RCD_PASSWORD                      :\t(${CENSORED_RCD_PASSWORD} chars)\n"
 echo "-------------------------------------"
 print_status "PlexDrive Config                         " ls /config/config.json
 print_status "PlexDrive Process                        " pgrep plexdrive
