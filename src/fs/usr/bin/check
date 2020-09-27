@@ -17,7 +17,6 @@ print_status() {
 }
 
 CENSORED_PLEX_TOKEN=`echo "${PLEX_TOKEN}" | wc -L`
-CENSORED_RCD_PASSWORD=`echo "${RCLONE_RCD_PASSWORD}" | wc -L`
 
 echo "-------------------------------------"
 printf       "UID                                      :\t${PUID}\n"
@@ -36,10 +35,8 @@ printf       "CHUNK_LOAD_AHEAD                         :\t${CHUNK_LOAD_AHEAD}\n"
 printf       "CHUNK_LOAD_THREADS                       :\t${CHUNK_LOAD_THREADS}\n"
 printf       "REMOVE_LOCAL_FILES_WHEN_SPACE_EXCEEDS_GB :\t${REMOVE_LOCAL_FILES_WHEN_SPACE_EXCEEDS_GB}\n"
 printf       "RMDELETETIME                             :\t${RMDELETETIME}\n"
-printf       "RCLONE_RCD_USER                          :\t${RCLONE_RCD_USER}\n"
-printf       "RCLONE_RCD_PASSWORD                      :\t(${CENSORED_RCD_PASSWORD} chars)\n"
 echo "-------------------------------------"
-print_status "PlexDrive Config                         " ls /config/config.json
+print_status "PlexDrive Config                         " ls "${PLEXDRIVE_CONFIG_FILES}/config.json"
 print_status "PlexDrive Process                        " pgrep plexdrive
 print_status "PlexDrive Mount                          " ls -A "${PLEXDRIVE_MOUNT}"
 print_status "Rclone Upload Config                     " [ "$(rclone listremotes --config=${RCLONE_CONFIG_FILE} | grep "${RCLONE_CLOUD_ENDPOINT}" | wc -l)" != "0" ]
