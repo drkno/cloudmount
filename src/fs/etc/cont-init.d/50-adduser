@@ -2,6 +2,11 @@
 
 . "/usr/bin/variables"
 
+echo "Creating user..."
+
+usermod -o -u "$PUID" abc
+groupmod -o -g "$PGID" abc
+
 echo "Fixing permissions..."
 
 chmod a+r /etc/fuse.conf
@@ -10,4 +15,6 @@ chmod -R 777 \
     /var/lock \
     $CONFIG_ROOT
 
-chown -R $USER:$USER $CONFIG_ROOT
+chown -R abc:abc \
+    $CONFIG_ROOT \
+    /usr/bin/*

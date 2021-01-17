@@ -31,8 +31,8 @@ mount_rclone () {
         --user-agent "cloudmount/1.0" \
         --buffer-size "${BUFFER_SIZE}" \
         --checkers "${CHECKERS}" \
-        --uid "$(id -u)" \
-        --gid "$(id -g)" \
+        --uid "${PUID}" \
+        --gid "${PGID}" \
         --umask 002 \
         \
         `# Fuse Options` \
@@ -67,7 +67,7 @@ mount_rclone () {
 }
 
 mount_union () {
-    perform_mount "${MOUNT_DIR}" unionfs -o uid=$(id -u) -o gid=$(id -g) -o cow,allow_other,direct_io,nonempty,auto_cache,sync_read "${UPLOAD_QUEUE}=RW:${RCLONE_MOUNT}=RO"
+    perform_mount "${MOUNT_DIR}" unionfs -o uid=${PUID} -o gid=${PGID} -o cow,allow_other,direct_io,nonempty,auto_cache,sync_read "${UPLOAD_QUEUE}=RW:${RCLONE_MOUNT}=RO"
 }
 
 if pidof -o %PPID -x "$(basename "$0")"; then

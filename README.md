@@ -48,6 +48,8 @@ Configuration lives in `/config/cloudplow.json`, a default `cloudplow.json` will
 
 | Configuration Option                     | Default Value  | Description                    |
 |------------------------------------------|----------------|--------------------------------|
+| PGID                                     | _empty_        | User GID to run as.            |
+| PUID                                     | _empty_        | User UID to run as.            |
 | PLEX_URL                                 | _empty_        | The PMS to empty the trash of. |
 | PLEX_TOKEN                               | _empty_        | The user token for the PMS.    |
 | BUFFER_SIZE                              | `500M`         | Buffer size to use when uploading / moving files |
@@ -101,7 +103,6 @@ services:
             - /dev/fuse
         ports:
             - 5572:5572/tcp
-        user: '1000:1000'
 ```
 
 ### Rclone RCD GUI

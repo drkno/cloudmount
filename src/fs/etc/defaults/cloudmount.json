@@ -1,4 +1,6 @@
 {
+    "PUID": 1000,
+    "PGID": 1000,
     "PLEX_URL": "",
     "PLEX_TOKEN": "",
     "S6_BEHAVIOUR_IF_STAGE2_FAILS": 2,
