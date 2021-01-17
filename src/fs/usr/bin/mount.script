@@ -26,7 +26,7 @@ mount_plexdrive () {
 
 mount_rclone () {
     perform_mount "${RCLONE_MOUNT}" rclone mount \
-        \ # Rclone Options
+        `# Rclone Options` \
         "--config=${RCLONE_CONFIG_FILE}" \
         --user-agent "cloudmount/1.0" \
         --buffer-size "${BUFFER_SIZE}" \
@@ -35,11 +35,11 @@ mount_rclone () {
         --gid "$(id -g)" \
         --umask 002 \
         \
-        \ # Fuse Options
+        `# Fuse Options` \
         --allow-non-empty \
         --allow-other \
         \
-        \ # RCD
+        `# RCD` \
         --rc-web-gui \
         --rc-web-gui-no-open-browser \
         --rc-no-auth \
@@ -47,7 +47,7 @@ mount_rclone () {
         --rc-user=admin \
         --rc-pass=admin \
         \
-        \ # VFS
+        `# VFS` \
         --cache-dir "${RCLONE_CACHE}" \
         --dir-cache-time "${DIR_CACHE_MAX_AGE}" \
         --max-read-ahead "${MAX_READ_AHEAD}" \
@@ -59,10 +59,10 @@ mount_rclone () {
         --vfs-cache-max-size 500G \
         --vfs-read-ahead "${READ_SIZE}" \
         \
-        \ # Performance
+        `# Performance` \
         --no-modtime \
         \
-        \ # Mount
+        `# Mount` \
         --read-only "${RCLONE_LOCAL_ENDPOINT}"
 }
 
