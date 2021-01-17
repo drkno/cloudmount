@@ -22,7 +22,7 @@ Run `docker run -it --rm -v ./config:/config drkno/cloudmount:latest rclone_setu
     - Open the url in your browser and enter the verification code
  - Encryption and decryption for your cloud storage.
     - Create new remote [**Press N**]
-    - Give it the same name as specified in the environment variable `RCLONE_CLOUD_ENDPOINT` but without colon (:) (*default gd-crypt*)
+    - Give it the same name as specified in the configuration option `RCLONE_CLOUD_ENDPOINT` but without colon (:) (*default gd-crypt*)
     - Choose Encrypt/Decrypt a remote [**Press 5**]
     - Enter the name of the endpoint created in cloud-storage appended with a colon (:) and the subfolder on your cloud. Example `gd:/Media` or just `gd:` if you have your files in root in the cloud.
     - Choose how to encrypt filenames. I prefer option 2 Encrypt the filenames
@@ -30,7 +30,7 @@ Run `docker run -it --rm -v ./config:/config drkno/cloudmount:latest rclone_setu
     - Choose to enter pass phrase for the salt or leave it blank. I prefer to enter my own.
  - Encryption and decryption for your local storage.
     - Create new remote [**Press N**]
-    - Give it the same name as specified in the environment variable `RCLONE_LOCAL_ENDPOINT` but without colon (:) (*default local-crypt*)
+    - Give it the same name as specified in the configuration option `RCLONE_LOCAL_ENDPOINT` but without colon (:) (*default local-crypt*)
     - Choose Encrypt/Decrypt a remote [**Press 5**]
     - Enter the encrypted folder: **/config/mount**.
     - Choose the same filename encrypted as you did with the cloud storage.
@@ -41,12 +41,13 @@ Run `docker run -it --rm -v ./config:/config drkno/cloudmount:latest rclone_setu
 
 Run `docker run -it --rm -v ./config:/config drkno/cloudmount:latest plexdrive_setup` to [setup PlexDrive](https://github.com/plexdrive/plexdrive), where `./config` reflects where you want configuration files to live.
 
-## Environment Variables
+## Configuration Options
 
-| Environment Variable                     | Default Value  | Description                    |
+Configuration lives in `/config/cloudplow.json`, a default `cloudplow.json` will be created start if none is present.
+
+
+| Configuration Option                     | Default Value  | Description                    |
 |------------------------------------------|----------------|--------------------------------|
-| PGID                                     | _empty_        | User GID to run as.            |
-| PUID                                     | _empty_        | User UID to run as.            |
 | PLEX_URL                                 | _empty_        | The PMS to empty the trash of. |
 | PLEX_TOKEN                               | _empty_        | The user token for the PMS.    |
 | BUFFER_SIZE                              | `500M`         | Buffer size to use when uploading / moving files |
@@ -92,23 +93,7 @@ services:
             - MKNOD
             - SYS_ADMIN
         environment:
-            - PGID=1000
-            - PUID=1000
             - TZ=Australia/Sydney
-            - BUFFER_SIZE=500M
-            - MAX_READ_AHEAD=30G
-            - CHECKERS=16
-            - "RCLONE_CLOUD_ENDPOINT=gd-crypt:"
-            - "RCLONE_LOCAL_ENDPOINT=local-crypt:"
-            - CHUNK_SIZE=10M
-            - REMOVE_LOCAL_FILES_WHEN_SPACE_EXCEEDS_GB=100
-            - PLEX_URL=plex:32400
-            - PLEX_TOKEN=
-            - RMDELETETIME=0 6 * * *
-            - CHUNK_CHECK_THREADS=16
-            - CHUNK_LOAD_AHEAD=6
-            - CHUNK_LOAD_THREADS=16
-            - MAX_NUM_CHUNKS=50
         volumes:
             - /etc/localtime:/etc/localtime:ro
             - ./config:/config:shared
@@ -116,6 +101,7 @@ services:
             - /dev/fuse
         ports:
             - 5572:5572/tcp
+        user: '1000:1000'
 ```
 
 ### Rclone RCD GUI

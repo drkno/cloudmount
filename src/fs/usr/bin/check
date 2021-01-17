@@ -19,8 +19,8 @@ print_status() {
 CENSORED_PLEX_TOKEN=`echo "${PLEX_TOKEN}" | wc -L`
 
 echo "-------------------------------------"
-printf       "UID                                      :\t${PUID}\n"
-printf       "GID                                      :\t${PUID}\n"
+printf       "UID                                      :\t$(id -u)\n"
+printf       "GID                                      :\t$(id -g)\n"
 printf       "PLEX_URL                                 :\t${PLEX_URL}\n"
 printf       "PLEX_TOKEN                               :\t(${CENSORED_PLEX_TOKEN} chars)\n"
 printf       "BUFFER_SIZE                              :\t${BUFFER_SIZE}\n"

@@ -43,11 +43,6 @@ rm -rf /install/fs/opt/cloudplow/.git
 mkdir /config
 chmod -R 777 /config
 
-# User and Group
-groupmod -g 1000 users
-useradd -u 911 -U -d / -s /bin/false abc
-usermod -G users abc
-
 # Move files
 rsync --remove-source-files -avIK /install/fs/ /
 

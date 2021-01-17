@@ -25,11 +25,49 @@ mount_plexdrive () {
 }
 
 mount_rclone () {
-    perform_mount "${RCLONE_MOUNT}" rclone mount "--config=${RCLONE_CONFIG_FILE}" --vfs-cache-mode full --vfs-read-ahead "${BUFFER_SIZE}" --buffer-size "${BUFFER_SIZE}" --checkers "${CHECKERS}" --allow-non-empty --allow-other --no-modtime --max-read-ahead "${MAX_READ_AHEAD}" --uid "${PUID}" --gid "${PGID}" --read-only "${RCLONE_LOCAL_ENDPOINT}"
+    perform_mount "${RCLONE_MOUNT}" rclone mount \
+        \ # Rclone Options
+        "--config=${RCLONE_CONFIG_FILE}" \
+        --user-agent "cloudmount/1.0" \
+        --buffer-size "${BUFFER_SIZE}" \
+        --checkers "${CHECKERS}" \
+        --uid "$(id -u)" \
+        --gid "$(id -g)" \
+        --umask 002 \
+        \
+        \ # Fuse Options
+        --allow-non-empty \
+        --allow-other \
+        \
+        \ # RCD
+        --rc-web-gui \
+        --rc-web-gui-no-open-browser \
+        --rc-no-auth \
+        --rc-addr "0.0.0.0:5572" \
+        --rc-user=admin \
+        --rc-pass=admin \
+        \
+        \ # VFS
+        --cache-dir "${RCLONE_CACHE}" \
+        --dir-cache-time "${DIR_CACHE_MAX_AGE}" \
+        --max-read-ahead "${MAX_READ_AHEAD}" \
+        --poll-interval 1m \
+        --vfs-read-chunk-size "${READ_SIZE}" \
+        --vfs-cache-poll-interval 1h \
+        --vfs-cache-mode full \
+        --vfs-cache-max-age "${CACHE_MAX_AGE}" \
+        --vfs-cache-max-size 500G \
+        --vfs-read-ahead "${READ_SIZE}" \
+        \
+        \ # Performance
+        --no-modtime \
+        \
+        \ # Mount
+        --read-only "${RCLONE_LOCAL_ENDPOINT}"
 }
 
 mount_union () {
-    perform_mount "${MOUNT_DIR}" unionfs -o uid=${PUID} -o gid=${PGID} -o cow,allow_other,direct_io,nonempty,auto_cache,sync_read "${UPLOAD_QUEUE}=RW:${RCLONE_MOUNT}=RO"
+    perform_mount "${MOUNT_DIR}" unionfs -o uid=$(id -u) -o gid=$(id -g) -o cow,allow_other,direct_io,nonempty,auto_cache,sync_read "${UPLOAD_QUEUE}=RW:${RCLONE_MOUNT}=RO"
 }
 
 if pidof -o %PPID -x "$(basename "$0")"; then
