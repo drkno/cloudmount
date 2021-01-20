@@ -36,11 +36,13 @@ printf       "CHUNK_LOAD_THREADS                       :\t${CHUNK_LOAD_THREADS}\
 printf       "REMOVE_LOCAL_FILES_WHEN_SPACE_EXCEEDS_GB :\t${REMOVE_LOCAL_FILES_WHEN_SPACE_EXCEEDS_GB}\n"
 printf       "RMDELETETIME                             :\t${RMDELETETIME}\n"
 echo "-------------------------------------"
-print_status "PlexDrive Config                         " ls "${PLEXDRIVE_CONFIG_FILES}/config.json"
-print_status "PlexDrive Process                        " pgrep plexdrive
-print_status "PlexDrive Mount                          " ls -A "${PLEXDRIVE_MOUNT}"
+if [ "${MODE}" != "rclone" ]; then
+    print_status "PlexDrive Config                         " ls "${PLEXDRIVE_CONFIG_FILES}/config.json"
+    print_status "PlexDrive Process                        " pgrep plexdrive
+    print_status "PlexDrive Mount                          " ls -A "${PLEXDRIVE_MOUNT}"
+    print_status "Rclone Decrypt Config                    " [ "$(rclone listremotes --config=${RCLONE_CONFIG_FILE} | grep "${RCLONE_LOCAL_ENDPOINT}" | wc -l)" != "0" ]
+fi
 print_status "Rclone Upload Config                     " [ "$(rclone listremotes --config=${RCLONE_CONFIG_FILE} | grep "${RCLONE_CLOUD_ENDPOINT}" | wc -l)" != "0" ]
-print_status "Rclone Decrypt Config                    " [ "$(rclone listremotes --config=${RCLONE_CONFIG_FILE} | grep "${RCLONE_LOCAL_ENDPOINT}" | wc -l)" != "0" ]
 print_status "Rclone Process                           " pgrep rclone
 print_status "Rclone Mount                             " ls -A "${RCLONE_MOUNT}"
 print_status "Union Process                            " pgrep unionfs
