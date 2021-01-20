@@ -25,6 +25,14 @@ mount_plexdrive () {
 }
 
 mount_rclone () {
+    if [ "${MODE}" = "rclone" ]; then
+        mount_rclone_with_remote "${RCLONE_CLOUD_ENDPOINT}"
+    else
+        mount_rclone_with_remote "${RCLONE_LOCAL_ENDPOINT}"
+    fi
+}
+
+mount_rclone_with_remote () {
     perform_mount "${RCLONE_MOUNT}" rclone mount \
         `# Rclone Options` \
         "--config=${RCLONE_CONFIG_FILE}" \
@@ -40,12 +48,11 @@ mount_rclone () {
         --allow-other \
         \
         `# RCD` \
+        --rc \
         --rc-web-gui \
         --rc-web-gui-no-open-browser \
         --rc-no-auth \
         --rc-addr "0.0.0.0:5572" \
-        --rc-user=admin \
-        --rc-pass=admin \
         \
         `# VFS` \
         --cache-dir "${RCLONE_CACHE}" \
@@ -63,7 +70,7 @@ mount_rclone () {
         --no-modtime \
         \
         `# Mount` \
-        --read-only "${RCLONE_LOCAL_ENDPOINT}"
+        --read-only "${1}"
 }
 
 mount_union () {
@@ -73,8 +80,13 @@ mount_union () {
 if pidof -o %PPID -x "$(basename "$0")"; then
     echo "Mount already in progress. Aborting."
 else
-    mount_plexdrive
-    mount_rclone
+    if [ "${MODE}" = "rclone" ]; then
+        echo "Mounting in rclone only mode"
+        mount_rclone "${RCLONE_CLOUD_ENDPOINT}"
+    else
+        mount_plexdrive
+        mount_rclone "${RCLONE_LOCAL_ENDPOINT}"
+    fi
     mount_union
 fi
 

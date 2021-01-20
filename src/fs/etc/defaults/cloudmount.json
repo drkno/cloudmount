@@ -5,7 +5,7 @@
     "PLEX_TOKEN": "",
     "S6_BEHAVIOUR_IF_STAGE2_FAILS": 2,
     "S6_KEEP_ENV": 1,
-    "BUFFER_SIZE": "128M",
+    "BUFFER_SIZE": "512M",
     "MAX_READ_AHEAD": "50M",
     "CHECKERS": "16",
     "RCLONE_CLOUD_ENDPOINT": "gd-crypt:",
@@ -19,5 +19,6 @@
     "RMDELETETIME": "0 6 * * *",
     "DIR_CACHE_MAX_AGE": "1000h",
     "CACHE_MAX_AGE": "336h",
-    "READ_SIZE": "128M"
+    "READ_SIZE": "32M",
+    "MODE": "rclone"
 }
