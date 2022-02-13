@@ -16,7 +16,7 @@ cat > "${CLOUDPLOW_CONFIG_FILE}" << EOF
     "hidden": {
         "${MOUNT_DIR}/.unionfs-fuse": {
             "hidden_remotes": [
-                "$(echo ${RCLONE_CLOUD_ENDPOINT} | cut -d':' -f1)"
+                "$(echo ${RCLONE_ENDPOINT} | cut -d':' -f1)"
             ]
         }
     },
@@ -46,8 +46,8 @@ cat > "${CLOUDPLOW_CONFIG_FILE}" << EOF
         }
     },
     "remotes": {
-        "$(echo ${RCLONE_CLOUD_ENDPOINT} | cut -d':' -f1)": {
-            "hidden_remote": "${RCLONE_CLOUD_ENDPOINT}",
+        "$(echo ${RCLONE_ENDPOINT} | cut -d':' -f1)": {
+            "hidden_remote": "${RCLONE_ENDPOINT}",
             "rclone_excludes": [
                 "**partial~",
                 "**_HIDDEN~",
@@ -81,17 +81,17 @@ cat > "${CLOUDPLOW_CONFIG_FILE}" << EOF
             "remove_empty_dir_depth": 2,
             "sync_remote": "",
             "upload_folder": "${UPLOAD_QUEUE}",
-            "upload_remote": "${RCLONE_CLOUD_ENDPOINT}"
+            "upload_remote": "${RCLONE_ENDPOINT}"
         }
     },
     "syncer": {
     },
     "uploader": {
-        "$(echo ${RCLONE_CLOUD_ENDPOINT} | cut -d':' -f1)": {
+        "$(echo ${RCLONE_ENDPOINT} | cut -d':' -f1)": {
             "can_be_throttled": true,
             "check_interval": 30,
             "exclude_open_files": true,
-            "max_size_gb": ${REMOVE_LOCAL_FILES_WHEN_SPACE_EXCEEDS_GB},
+            "max_size_gb": ${MAX_CACHE_FILES},
             "opened_excludes": [
             ],
             "schedule": {

@@ -13,10 +13,6 @@ move_if_exists() {
     fi
 }
 
-# PlexDrive configs
-move_if_exists "${CONFIG_ROOT}/config.json" "${PLEXDRIVE_CONFIG_FILES}/config.json"
-move_if_exists "${CONFIG_ROOT}/token.json" "${PLEXDRIVE_CONFIG_FILES}/token.json"
-
 # Rclone config
 move_if_exists "${CONFIG_ROOT}/rclone.conf" "${RCLONE_CONFIG_FILE}"
 

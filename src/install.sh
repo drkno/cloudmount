@@ -17,13 +17,6 @@ curl "$RCLONE_URL" -L -o ./rclone.deb
 dpkg -i ./rclone.deb
 rm ./rclone.deb
 
-# Plexdrive
-PLEXDRIVE_RELEASES_URL="https://api.github.com/repos/plexdrive/plexdrive/releases/latest"
-PLEXDRIVE_LATEST_RELEASE=`curl -s "$PLEXDRIVE_RELEASES_URL" | grep "browser_download_url.*plexdrive-linux-amd64\"" | cut -d : -f 2,3 | tr -d \" | tr -d '[:space:]'`
-curl "$PLEXDRIVE_LATEST_RELEASE" -L -o ./plexdrive
-chmod a+x ./plexdrive
-mv ./plexdrive /usr/bin/plexdrive
-
 # S6
 S6_RELEASES_URL="https://api.github.com/repos/just-containers/s6-overlay/releases/latest"
 S6_LATEST_RELEASE=`curl -s "$S6_RELEASES_URL" | grep "browser_download_url.*s6-overlay-amd64.tar.gz\"" | cut -d : -f 2,3 | tr -d \" | tr -d '[:space:]'`

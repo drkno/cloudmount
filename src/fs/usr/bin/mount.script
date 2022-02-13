@@ -20,19 +20,7 @@ perform_mount() {
     wait_for_mount "${mount_point}"
 }
 
-mount_plexdrive () {
-    perform_mount "${PLEXDRIVE_MOUNT}" plexdrive mount $PLEXDRIVE_OPTIONS
-}
-
 mount_rclone () {
-    if [ "${MODE}" = "rclone" ]; then
-        mount_rclone_with_remote "${RCLONE_CLOUD_ENDPOINT}"
-    else
-        mount_rclone_with_remote "${RCLONE_LOCAL_ENDPOINT}"
-    fi
-}
-
-mount_rclone_with_remote () {
     perform_mount "${RCLONE_MOUNT}" rclone mount \
         `# Rclone Options` \
         "--config=${RCLONE_CONFIG_FILE}" \
@@ -42,16 +30,18 @@ mount_rclone_with_remote () {
         --uid "${PUID}" \
         --gid "${PGID}" \
         --umask 002 \
+        --use-mmap \
         \
         `# Fuse Options` \
         --allow-non-empty \
         --allow-other \
         \
-        `# RCD` \
+        `# RCD, expected to be run **behind an SSO**` \
         --rc \
         --rc-web-gui \
         --rc-web-gui-no-open-browser \
-        --rc-no-auth \
+        --rc-user admin \
+        --rc-pass admin \
         --rc-addr "0.0.0.0:5572" \
         \
         `# VFS` \
@@ -63,14 +53,14 @@ mount_rclone_with_remote () {
         --vfs-cache-poll-interval 1h \
         --vfs-cache-mode full \
         --vfs-cache-max-age "${CACHE_MAX_AGE}" \
-        --vfs-cache-max-size 500G \
+        --vfs-cache-max-size "${MAX_CACHE_FILES}" \
         --vfs-read-ahead "${READ_SIZE}" \
         \
         `# Performance` \
         --no-modtime \
         \
         `# Mount` \
-        --read-only "${1}"
+        --read-only "${RCLONE_ENDPOINT}"
 }
 
 mount_union () {
@@ -80,13 +70,7 @@ mount_union () {
 if pidof -o %PPID -x "$(basename "$0")"; then
     echo "Mount already in progress. Aborting."
 else
-    if [ "${MODE}" = "rclone" ]; then
-        echo "Mounting in rclone only mode"
-        mount_rclone "${RCLONE_CLOUD_ENDPOINT}"
-    else
-        mount_plexdrive
-        mount_rclone "${RCLONE_LOCAL_ENDPOINT}"
-    fi
+    mount_rclone
     mount_union
 fi
 

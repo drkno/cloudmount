@@ -7,10 +7,6 @@ if [ ! -f "${RCLONE_CONFIG_FILE}" ]; then
     rclone_setup
 fi
 
-if [ ! -f "${PLEXDRIVE_CONFIG_FILES}/config.json" ]; then
-    plexdrive_setup
-fi
-
 if [ ! -f "${CLOUDPLOW_CONFIG_FILE}" ]; then
     cloudplow_setup
 fi

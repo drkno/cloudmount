@@ -9,7 +9,6 @@ INTERMEDIATE_DIR="${CONFIG_ROOT}/intermediate_mounts"
 
 # Mount Locations
 MOUNT_DIR="${CONFIG_ROOT}/mount"
-PLEXDRIVE_MOUNT="${INTERMEDIATE_DIR}/plexdrive"
 RCLONE_MOUNT="${INTERMEDIATE_DIR}/rclone"
 UPLOAD_QUEUE="${INTERMEDIATE_DIR}/upload_queue"
 RCLONE_CACHE="${INTERMEDIATE_DIR}/rclone_cache"
@@ -17,7 +16,6 @@ RCLONE_CACHE="${INTERMEDIATE_DIR}/rclone_cache"
 # Config Files
 CLOUDPLOW_CONFIG_FILE="${CONFIG_FILES_DIR}/cloudplow.json"
 RCLONE_CONFIG_FILE="${CONFIG_FILES_DIR}/rclone.conf"
-PLEXDRIVE_CONFIG_FILES="${CONFIG_FILES_DIR}/plexdrive"
 
 # Log Files
 CLOUDPLOW_LOG_FILE="${LOG_DIR}/cloudplow.log"
@@ -31,12 +29,3 @@ if [ ! -f "$CONFIG_FILE" ]; then
     cp /etc/defaults/cloudmount.json "$CONFIG_FILE"
 fi
 eval "$(cat $CONFIG_FILE | python3 /usr/bin/loadJsonConfig)"
-
-# PlexDrive shared
-PLEXDRIVE_OPTIONS="--config=${PLEXDRIVE_CONFIG_FILES} --cache-file=${PLEXDRIVE_CONFIG_FILES}/cache.bolt --chunk-size=${CHUNK_SIZE} --chunk-check-threads=${CHUNK_CHECK_THREADS} --chunk-load-ahead=${CHUNK_LOAD_AHEAD} --chunk-load-threads=${CHUNK_LOAD_THREADS} --uid=${PUID} --gid=${PGID} -o allow_other  -o read_only"
-if [ ! -z $(printenv MAX_NUM_CHUNKS) ]; then
-    PLEXDRIVE_OPTIONS="${PLEXDRIVE_OPTIONS} --max-chunks=${MAX_NUM_CHUNKS}"
-fi
-if [ ! -z "DRIVE_ID" ]; then
-    PLEXDRIVE_OPTIONS="${PLEXDRIVE_OPTIONS} --drive-id=${DRIVE_ID}"
-fi

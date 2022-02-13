@@ -26,23 +26,11 @@ printf       "PLEX_TOKEN                               :\t(${CENSORED_PLEX_TOKEN
 printf       "BUFFER_SIZE                              :\t${BUFFER_SIZE}\n"
 printf       "MAX_READ_AHEAD                           :\t${MAX_READ_AHEAD}\n"
 printf       "CHECKERS                                 :\t${CHECKERS}\n"
-printf       "RCLONE_CLOUD_ENDPOINT                    :\t${RCLONE_CLOUD_ENDPOINT}\n"
-printf       "RCLONE_LOCAL_ENDPOINT                    :\t${RCLONE_LOCAL_ENDPOINT}\n"
-printf       "CHUNK_SIZE                               :\t${CHUNK_SIZE}\n"
-printf       "MAX_NUM_CHUNKS                           :\t${MAX_NUM_CHUNKS}\n"
-printf       "CHUNK_CHECK_THREADS                      :\t${CHUNK_CHECK_THREADS}\n"
-printf       "CHUNK_LOAD_AHEAD                         :\t${CHUNK_LOAD_AHEAD}\n"
-printf       "CHUNK_LOAD_THREADS                       :\t${CHUNK_LOAD_THREADS}\n"
-printf       "REMOVE_LOCAL_FILES_WHEN_SPACE_EXCEEDS_GB :\t${REMOVE_LOCAL_FILES_WHEN_SPACE_EXCEEDS_GB}\n"
+printf       "RCLONE_ENDPOINT                          :\t${RCLONE_ENDPOINT}\n"
+printf       "MAX_CACHE_FILES                          :\t${MAX_CACHE_FILES}\n"
 printf       "RMDELETETIME                             :\t${RMDELETETIME}\n"
 echo "-------------------------------------"
-if [ "${MODE}" != "rclone" ]; then
-    print_status "PlexDrive Config                         " ls "${PLEXDRIVE_CONFIG_FILES}/config.json"
-    print_status "PlexDrive Process                        " pgrep plexdrive
-    print_status "PlexDrive Mount                          " ls -A "${PLEXDRIVE_MOUNT}"
-    print_status "Rclone Decrypt Config                    " [ "$(rclone listremotes --config=${RCLONE_CONFIG_FILE} | grep "${RCLONE_LOCAL_ENDPOINT}" | wc -l)" != "0" ]
-fi
-print_status "Rclone Upload Config                     " [ "$(rclone listremotes --config=${RCLONE_CONFIG_FILE} | grep "${RCLONE_CLOUD_ENDPOINT}" | wc -l)" != "0" ]
+print_status "Rclone Upload Config                     " [ "$(rclone listremotes --config=${RCLONE_CONFIG_FILE} | grep "${RCLONE_ENDPOINT}" | wc -l)" != "0" ]
 print_status "Rclone Process                           " pgrep rclone
 print_status "Rclone Mount                             " ls -A "${RCLONE_MOUNT}"
 print_status "Union Process                            " pgrep unionfs

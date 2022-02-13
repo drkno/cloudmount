@@ -2,6 +2,5 @@
 
 . "/usr/bin/variables"
 
-fusermount -uz "${PLEXDRIVE_MOUNT}"
 fusermount -uz "${RCLONE_MOUNT}"
 fusermount -uz "${MOUNT_DIR}"
