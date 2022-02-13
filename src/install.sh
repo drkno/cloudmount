@@ -27,6 +27,7 @@ tar -C /install/fs -Jxpf ./s6-overlay.tar.xz
 tar -C /install/fs -Jxpf ./s6-overlay-bin.tar.xz
 tar -C /install/fs -Jxpf ./s6-overlay-symlinks.tar.xz
 rm -rf ./s6*.tar.xz
+echo '/command:/usr/bin:/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/sbin' > /install/fs/etc/s6-overlay/config/global_path
 
 # Fuse
 sed -i 's/#user_allow_other/user_allow_other/' /etc/fuse.conf
