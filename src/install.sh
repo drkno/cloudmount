@@ -19,11 +19,14 @@ rm ./rclone.deb
 
 # S6
 S6_RELEASES_URL="https://api.github.com/repos/just-containers/s6-overlay/releases/latest"
-S6_LATEST_RELEASE=`curl -s "$S6_RELEASES_URL" | grep -E "browser_download_url.*s6-overlay-x86_64[a-zA-Z0-9\\.\\-]+.tar.xz\"" | cut -d : -f 2,3 | tr -d \" | tr -d '[:space:]'`
-curl "$S6_LATEST_RELEASE" -L -o ./s6.tar.xz
-tar -xf ./s6.tar.xz -C /install/fs/
-rm /install/fs/usr/bin/execlineb
-rm ./s6.tar.xz
+S6_VERSION_NUM=`curl -s "$S6_RELEASES_URL" | grep '"tag_name": "' | sed -E 's/.* "v?([^"]+)".*/\1/'`
+curl "https://github.com/just-containers/s6-overlay/releases/download/v$S6_VERSION_NUM/s6-overlay-noarch-$S6_VERSION_NUM.tar.xz" -L -o ./s6-overlay.tar.xz
+curl "https://github.com/just-containers/s6-overlay/releases/download/v$S6_VERSION_NUM/s6-overlay-x86_64-$S6_VERSION_NUM.tar.xz" -L -o ./s6-overlay-bin.tar.xz
+curl "https://github.com/just-containers/s6-overlay/releases/download/v$S6_VERSION_NUM/s6-overlay-symlinks-noarch-$S6_VERSION_NUM.tar.xz" -L -o ./s6-overlay-symlinks.tar.xz
+tar -C /install/fs -Jxpf ./s6-overlay.tar.xz
+tar -C /install/fs -Jxpf ./s6-overlay-bin.tar.xz
+tar -C /install/fs -Jxpf ./s6-overlay-symlinks.tar.xz
+rm -rf ./s6*.tar.xz
 
 # Fuse
 sed -i 's/#user_allow_other/user_allow_other/' /etc/fuse.conf
