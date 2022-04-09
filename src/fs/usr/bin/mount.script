@@ -38,10 +38,9 @@ mount_rclone () {
         \
         `# RCD, expected to be run **behind an SSO**` \
         --rc \
+        --rc-no-auth \
         --rc-web-gui \
         --rc-web-gui-no-open-browser \
-        --rc-user admin \
-        --rc-pass admin \
         --rc-addr "0.0.0.0:5572" \
         \
         `# VFS` \
@@ -49,15 +48,17 @@ mount_rclone () {
         --dir-cache-time "${DIR_CACHE_MAX_AGE}" \
         --max-read-ahead "${MAX_READ_AHEAD}" \
         --poll-interval 1m \
-        --vfs-read-chunk-size "${READ_SIZE}" \
+        --vfs-read-chunk-size "${READ_CHUNK_SIZE}" \
         --vfs-cache-poll-interval 1h \
         --vfs-cache-mode full \
         --vfs-cache-max-age "${CACHE_MAX_AGE}" \
         --vfs-cache-max-size "${MAX_CACHE_FILES}" \
-        --vfs-read-ahead "${READ_SIZE}" \
+        --vfs-read-ahead "${READ_AHEAD_SIZE}" \
         \
         `# Performance` \
         --no-modtime \
+        --no-checksum \
+        --transfers "${MAX_TRANSFERS}" \
         \
         `# Mount` \
         --read-only "${RCLONE_ENDPOINT}"

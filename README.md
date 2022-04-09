@@ -68,7 +68,8 @@ services:
 
 ### Rclone RCD GUI
 
-By default this container starts the [rclone rcd GUI](https://rclone.org/gui/) on port 5572 *with user admin/admin*. It is expected that this GUI will either not be exposed or [run behind an SSO](https://github.com/drkno/PlexSSOv2).
+By default this container starts the [rclone rcd GUI](https://rclone.org/gui/) on port 5572 *with no authentication*.
+It is expected that this GUI will either not be exposed or [run behind an SSO](https://github.com/drkno/PlexSSOv2).
 
 ## Building
 
