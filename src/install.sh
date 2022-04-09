@@ -20,14 +20,14 @@ rm ./rclone.deb
 # S6
 S6_RELEASES_URL="https://api.github.com/repos/just-containers/s6-overlay/releases/latest"
 S6_VERSION_NUM=`curl -s "$S6_RELEASES_URL" | grep '"tag_name": "' | sed -E 's/.* "v?([^"]+)".*/\1/'`
-curl "https://github.com/just-containers/s6-overlay/releases/download/v$S6_VERSION_NUM/s6-overlay-noarch-$S6_VERSION_NUM.tar.xz" -L -o ./s6-overlay.tar.xz
-curl "https://github.com/just-containers/s6-overlay/releases/download/v$S6_VERSION_NUM/s6-overlay-x86_64-$S6_VERSION_NUM.tar.xz" -L -o ./s6-overlay-bin.tar.xz
-curl "https://github.com/just-containers/s6-overlay/releases/download/v$S6_VERSION_NUM/s6-overlay-symlinks-noarch-$S6_VERSION_NUM.tar.xz" -L -o ./s6-overlay-symlinks.tar.xz
+curl "https://github.com/just-containers/s6-overlay/releases/download/v$S6_VERSION_NUM/s6-overlay-noarch.tar.xz" -L -o ./s6-overlay.tar.xz
+curl "https://github.com/just-containers/s6-overlay/releases/download/v$S6_VERSION_NUM/s6-overlay-x86_64.tar.xz" -L -o ./s6-overlay-bin.tar.xz
+curl "https://github.com/just-containers/s6-overlay/releases/download/v$S6_VERSION_NUM/s6-overlay-symlinks-noarch.tar.xz" -L -o ./s6-overlay-symlinks.tar.xz
 tar -C /install/fs -Jxpf ./s6-overlay.tar.xz
 tar -C /install/fs -Jxpf ./s6-overlay-bin.tar.xz
 tar -C /install/fs -Jxpf ./s6-overlay-symlinks.tar.xz
 rm -rf ./s6*.tar.xz
-echo '/command:/usr/bin:/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/sbin' > /install/fs/etc/s6-overlay/config/global_path
+sed -i -E 's/addpath \/command/addpath \/command\naddpath \/usr\/local\/sbin\naddpath \/usr\/local\/bin\naddpath \/usr\/sbin\naddpath \/sbin/g' /install/fs/init
 
 # Fuse
 sed -i 's/#user_allow_other/user_allow_other/' /etc/fuse.conf
