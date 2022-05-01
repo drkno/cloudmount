@@ -2,4 +2,9 @@
 . "/usr/bin/variables"
 
 cd /opt/cloudplow/
-python3 /opt/cloudplow/cloudplow.py --config "${CLOUDPLOW_CONFIG_FILE}" --logfile "${CLOUDPLOW_LOG_FILE}" --loglevel INFO run
+
+/command/s6-setuidgid "${PUID}:${PGID}" \
+    python3 /opt/cloudplow/cloudplow.py \
+    --config "${CLOUDPLOW_CONFIG_FILE}" \
+    --logfile "${CLOUDPLOW_LOG_FILE}" \
+    --loglevel INFO run
