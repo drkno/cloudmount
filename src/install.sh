@@ -35,6 +35,8 @@ sed -i 's/#user_allow_other/user_allow_other/' /etc/fuse.conf
 # CloudPlow
 python3 -m pip install --no-cache-dir --upgrade -r /install/fs/opt/cloudplow/requirements.txt
 rm -rf /install/fs/opt/cloudplow/.git
+git init /install/fs/opt/cloudplow
+chmod -R 777 /install/fs/opt/cloudplow
 
 # Directories
 mkdir /config
