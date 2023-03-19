@@ -8,7 +8,7 @@ chmod a+x /install/fs/etc/services.d/*/run
 
 # Dependencies
 apt-get update
-apt-get install -y curl cron fuse fuse3 unionfs-fuse ca-certificates openssl rsync python3 python3-pip git
+apt-get install -y curl cron libfuse2 fuse3 unionfs-fuse ca-certificates openssl rsync python3 python3-pip git
 update-ca-certificates
 
 # Rclone

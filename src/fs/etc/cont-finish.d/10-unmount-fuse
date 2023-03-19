@@ -3,4 +3,4 @@
 . "/usr/bin/variables"
 
 fusermount3 -uz "${RCLONE_MOUNT}"
-fusermount -uz "${MOUNT_DIR}"
+fusermount3 -uz "${MOUNT_DIR}"
