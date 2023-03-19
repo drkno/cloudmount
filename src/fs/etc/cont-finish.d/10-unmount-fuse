@@ -2,5 +2,5 @@
 
 . "/usr/bin/variables"
 
-fusermount -uz "${RCLONE_MOUNT}"
+fusermount3 -uz "${RCLONE_MOUNT}"
 fusermount -uz "${MOUNT_DIR}"
